@@ -10,6 +10,10 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-content:center;padding:40px 0;min-height:100vh}
+@media(max-width:480px){
+  body{padding:0;min-height:100%;height:100%;overflow:hidden;background:#fff}
+  .phone{width:100vw !important;height:100svh !important;border-radius:0 !important;box-shadow:none !important}
+}
 .phone{width:402px;background:#fff;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.18);border-radius:12px}
 .banner{background:#0039A6;padding:10px 16px;text-align:center}
 .banner span{color:#FFD600;font-weight:700;font-size:14px}
@@ -480,7 +484,7 @@ function openPicker(key) {
   if (key === 'il') renderPickerList('il', Object.keys(ADRES).sort((a,b)=>a.localeCompare(b,'tr')), st.il);
   else if (key === 'ilce') renderPickerList('ilce', Object.keys(ADRES[st.il]||{}).sort((a,b)=>a.localeCompare(b,'tr')), st.ilce);
   else if (key === 'mah') renderPickerList('mah', (ADRES[st.il]?.[st.ilce]||['Merkez Mah.','Yeni Mah.','Cumhuriyet Mah.']).sort((a,b)=>a.localeCompare(b,'tr')), st.mah);
-  setTimeout(() => document.getElementById('picker-' + key + '-search').focus(), 300);
+  // focus kaldırıldı — klavye otomatik açılmasın
 }
 function closePicker(key) {
   const el = document.getElementById('picker-' + key);
