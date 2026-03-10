@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Avansas – Kayıtlı Adreslerim</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-content:center;padding:40px 0;min-height:100vh}
+.phone{width:402px;background:#fff;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.18);border-radius:12px}
+.banner{background:#0039A6;padding:10px 16px;text-align:center}
+.banner span{color:#FFD600;font-weight:700;font-size:14px}
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f0f0f0}
+.logo-area{display:flex;align-items:center;gap:6px}
+.logo-badge{width:38px;height:38px;border-radius:50%;border:2px solid #0039A6;background:#e8eaf6;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0039A6}
+.logo-text{font-size:22px;font-weight:900;color:#0039A6;letter-spacing:-1px}
+.logo-sub{font-size:10px;color:#5c6bc0}
+.header-icons{display:flex;gap:8px;align-items:center}
+.icon-btn{width:36px;height:36px;border:1.5px solid #9CA3AF;border-radius:50%;display:flex;align-items:center;justify-content:center;background:none;cursor:pointer}
+.cart-wrap{position:relative}
+.cart-btn{border-color:#FF6F00}
+.cart-badge{position:absolute;top:-4px;right:-4px;background:#FF6F00;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700}
+.menu-icon{font-size:22px;color:#0039A6;background:none;border:none;cursor:pointer}
+.page{padding:20px 16px}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.page-title{font-size:22px;font-weight:700;color:#111827}
+.new-addr-btn{display:flex;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:#111827;font-size:15px;font-weight:500;font-family:'Open Sans',sans-serif}
+.addr-list{display:flex;flex-direction:column;gap:12px}
+.addr-card{border:1px solid #E5E7EB;border-radius:10px;padding:14px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.addr-title{font-weight:700;font-size:15px;color:#111827;margin-bottom:4px}
+.addr-detail{font-size:13px;color:#4B5563;line-height:20px}
+.addr-actions{display:flex;gap:6px;flex-shrink:0;padding-top:2px}
+.addr-actions button{background:none;border:none;cursor:pointer;padding:4px}
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.3);z-index:10;display:none}
+.overlay.active{display:block;animation:fadeIn .2s ease}
+.panel{position:absolute;left:0;right:0;bottom:-100vh;z-index:20;border-top-left-radius:12px;border-top-right-radius:12px;background:#fff;display:flex;flex-direction:column;transition:bottom .35s cubic-bezier(.32,.72,0,1);box-shadow:0 -8px 32px rgba(0,0,0,.12);height:80vh}
+.panel.open{bottom:0}
+.panel-header{height:56px;padding:0 16px;border-bottom:1px solid #D1D5DB;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.panel-title{font-size:16px;font-weight:700;color:#111827}
+.close-btn{width:40px;height:40px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.panel-body{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:12px}
+.panel-body::-webkit-scrollbar{width:4px}
+.panel-body::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:4px}
+.panel-footer{padding:12px 16px 24px;border-top:1px solid #D1D5DB;flex-shrink:0}
+.field{display:flex;flex-direction:column;gap:6px;width:100%}
+.field-label{display:flex;gap:2px;font-size:14px;font-weight:600;color:#111827}
+.sel-trigger{height:44px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #9CA3AF;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color .15s;user-select:none}
+.sel-trigger.disabled{background:#F3F4F6;border-color:#D1D5DB;cursor:not-allowed;pointer-events:none}
+.sel-trigger .val{font-size:16px;color:#111827}
+.sel-trigger .val.ph{color:#6B7280}
+.sel-trigger.disabled .val{color:#9CA3AF}
+.chevron{flex-shrink:0}
+.picker{position:absolute;left:0;right:0;top:0;bottom:0;z-index:50;background:#fff;display:flex;flex-direction:column;transition:opacity .2s,visibility .2s;opacity:0;visibility:hidden;border-top-left-radius:12px;border-top-right-radius:12px;overflow:hidden}
+.picker.open{opacity:1;visibility:visible}
+.picker-header{height:56px;padding:0 16px;border-bottom:1px solid #D1D5DB;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-top-left-radius:12px;border-top-right-radius:12px;background:#fff}
+.picker-back{width:40px;height:56px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer}
+.picker-title{flex:1;text-align:center;font-size:16px;font-weight:700;color:#111827;font-family:'Open Sans',sans-serif}
+.picker-close{width:40px;height:56px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer}
+.picker-search{padding:12px 16px 0;flex-shrink:0}
+.picker-search-box{height:44px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #9CA3AF;display:flex;align-items:center;gap:12px}
+.picker-search-box:focus-within{border-color:#0039A6}
+.picker-search-box input{border:none;outline:none;background:transparent;font-size:16px;font-family:'Open Sans',sans-serif;color:#374151;width:100%}
+.picker-search-box input::placeholder{color:#6B7280}
+.picker-list{flex:1;overflow-y:auto;padding:12px 0}
+.picker-list::-webkit-scrollbar{width:4px}
+.picker-list::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:4px}
+.picker-group-label{padding:4px 16px;font-size:16px;font-weight:700;color:#374151;line-height:24px}
+.picker-breadcrumb{display:flex;align-items:center;gap:4px;padding:0 0 4px 0;flex-shrink:0}
+.picker-breadcrumb .bc-prev{font-size:16px;font-weight:700;color:#9CA3AF;line-height:24px;cursor:pointer;font-family:'Open Sans',sans-serif;background:none;border:none;padding:0}
+.picker-breadcrumb .bc-sep{width:16px;height:16px;display:flex;align-items:center;justify-content:center;color:#9CA3AF}
+.picker-breadcrumb .bc-cur{font-size:16px;font-weight:700;color:#374151;line-height:24px;font-family:'Open Sans',sans-serif}
+.picker-row{height:56px;min-height:56px;padding:12px 16px;border-bottom:1px solid #D1D5DB;display:flex;align-items:center;cursor:pointer;background:#fff;font-size:16px;color:#374151;font-family:'Open Sans',sans-serif;line-height:24px}
+.picker-row:hover{background:#F9FAFB}
+.picker-row.active{color:#0039A6;font-weight:600;background:#F0F5FF}
+.search-wrap{position:relative}
+.search-box{height:44px;padding:10px 12px;background:#F3F4F6;border-radius:8px;border:1px solid #D1D5DB;display:flex;align-items:center;gap:10px;transition:.15s}
+.search-box.on{background:#fff;border-color:#9CA3AF}
+.search-box.on:focus-within{border-color:#0039A6}
+.search-box input{border:none;outline:none;background:transparent;font-size:16px;font-family:'Open Sans',sans-serif;color:#111827;width:100%}
+.search-box input::placeholder{color:#6B7280}
+.search-box input:disabled{color:#9CA3AF;-webkit-text-fill-color:#9CA3AF;opacity:1}
+.search-box input:disabled::placeholder{color:#9CA3AF;-webkit-text-fill-color:#9CA3AF;opacity:1}
+.sugg-list{position:absolute;top:48px;left:0;right:0;z-index:200;background:#fff;border-radius:8px;border:1px solid #D1D5DB;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:200px;overflow-y:auto;display:none}
+.sugg-list.open{display:block}
+.sugg-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid #F3F4F6}
+.sugg-item:last-child{border-bottom:none}
+.sugg-item:hover{background:#F9FAFB}
+.sugg-item .main{font-size:14px;font-weight:600;color:#111827}
+.sugg-item .sub{font-size:12px;color:#6B7280;margin-top:2px}
+.helper{font-size:12px;color:#6B7280;line-height:16px}
+.map-box{height:200px;border-radius:8px;overflow:hidden;flex-shrink:0}
+#map{height:100%;width:100%}
+.t-input{width:100%;height:44px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #9CA3AF;font-size:16px;font-family:'Open Sans',sans-serif;color:#374151;outline:none;transition:border-color .15s}
+.t-input:focus{border-color:#0039A6}
+.t-input::placeholder{color:#6B7280}
+.devam-btn{width:100%;height:48px;border-radius:8px;border:none;background:#F3F4F6;color:#9CA3AF;font-size:16px;font-weight:600;font-family:'Open Sans',sans-serif;cursor:not-allowed;transition:.2s}
+.devam-btn.on{background:#0039A6;color:#fff;cursor:pointer}
+.devam-btn.on:hover{background:#003497}
+.bottom-nav{border-top:1px solid #E5E7EB;padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
+.bni{text-align:center;font-size:11px;color:#4B5563;font-weight:500;cursor:pointer}
+.chat-btn{width:52px;height:52px;border-radius:50%;border:3px solid #60a5fa;display:flex;align-items:center;justify-content:center;cursor:pointer}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:16px;height:16px;border:2px solid #D1D5DB;border-top-color:#0039A6;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:none}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="banner"><span>Ramazan Kolisi'ni Hemen İncele!</span></div>
+  <div class="header">
+    <button class="menu-icon">☰</button>
+    <div class="logo-area">
+      <div class="logo-badge">15YIL</div>
+      <div><div class="logo-text">Avansas</div><div class="logo-sub">İşyerinin alışveriş yeri</div></div>
+    </div>
+    <div class="header-icons">
+      <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5.5" stroke="#9CA3AF" stroke-width="1.6"/><path d="M13 13L17 17" stroke="#9CA3AF" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      <div class="cart-wrap">
+        <button class="icon-btn cart-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 4h14l-1.5 9H4.5L3 4Z" stroke="#FF6F00" stroke-width="1.5"/><circle cx="7.5" cy="16.5" r="1" fill="#FF6F00"/><circle cx="13.5" cy="16.5" r="1" fill="#FF6F00"/></svg></button>
+        <div class="cart-badge">12</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <h1 class="page-title">Kayıtlı Adreslerim</h1>
+      <button class="new-addr-btn" id="btnYeniAdres"><span style="font-size:20px;line-height:1">+</span><span>Yeni Adres Ekle</span></button>
+    </div>
+    <div class="addr-list" id="addrList"></div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="bni">Tedarikçimiz<br>Olun</div>
+    <div class="bni">Yardım<br>Talebi</div>
+    <div class="bni">Avansas<br>Blog</div>
+    <div class="bni">S.S.S.</div>
+    <div class="chat-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#60a5fa" opacity="0.3"/><circle cx="12" cy="12" r="3" fill="#60a5fa"/></svg></div>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="panel" id="panel">
+    <div class="panel-header">
+      <div style="width:40px"></div>
+      <span class="panel-title">Adres Seçin</span>
+      <button class="close-btn" id="btnKapat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2L14 14M14 2L2 14" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="panel-body">
+
+      <div class="field">
+        <div class="field-label">İl <span>*</span></div>
+        <div class="sel-trigger" id="trigger-il">
+          <span class="val ph" id="val-il">Seç</span>
+          <svg class="chevron" width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#374151" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">İlçe <span>*</span></div>
+        <div class="sel-trigger disabled" id="trigger-ilce">
+          <span class="val ph" id="val-ilce">Seç</span>
+          <svg class="chevron" width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Mahalle <span>*</span></div>
+        <div class="sel-trigger disabled" id="trigger-mah">
+          <span class="val ph" id="val-mah">Seç</span>
+          <svg class="chevron" width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Sokak/Bina/Firma <span>*</span></div>
+        <div class="search-wrap">
+          <div class="search-box" id="search-box">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#9CA3AF" stroke-width="1.8" id="sic1"/><path d="M13.5 13.5L17 17" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" id="sic2"/></svg>
+            <input id="sokak-input" placeholder="Ara" disabled autocomplete="off"/>
+            <div class="spinner" id="spinner"></div>
+          </div>
+          <div class="sugg-list" id="sugg-list"></div>
+        </div>
+        <span class="helper" id="helper-txt">*Arama yapmadan önce il, ilçe ve mahalle seçin.</span>
+      </div>
+
+      <div class="map-box" id="map-box"><div id="map"></div></div>
+
+    </div>
+    <!-- Picker: İl -->
+    <div class="picker" id="picker-il">
+      <div class="picker-header">
+        <button class="picker-back" id="picker-il-back"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="picker-title">İl Seçin</span>
+        <button class="picker-close" id="picker-il-close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div class="picker-search">
+        <div class="picker-search-box">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#374151" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="#374151" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input id="picker-il-search" placeholder="Ara" autocomplete="off"/>
+        </div>
+      </div>
+      <div class="picker-list" id="picker-il-list"></div>
+    </div>
+
+    <!-- Picker: İlçe -->
+    <div class="picker" id="picker-ilce">
+      <div class="picker-header">
+        <button class="picker-back" id="picker-ilce-back"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="picker-title">İlçe Seçin</span>
+        <button class="picker-close" id="picker-ilce-close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div style="padding:12px 16px 0">
+        <div class="picker-breadcrumb">
+          <button class="bc-prev" id="bc-il-btn"></button>
+          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <span class="bc-cur">İlçe</span>
+        </div>
+      </div>
+      <div class="picker-search">
+        <div class="picker-search-box">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#374151" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="#374151" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input id="picker-ilce-search" placeholder="Ara" autocomplete="off"/>
+        </div>
+      </div>
+      <div class="picker-list" id="picker-ilce-list"></div>
+    </div>
+
+
+
+    <!-- Adresi Onayla ekranı -->
+    <div class="picker" id="picker-onayla">
+      <div class="picker-header">
+        <button class="picker-back" id="picker-onayla-back"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="picker-title">Adresi Onayla</span>
+        <button class="picker-close" id="picker-onayla-close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div class="picker-list" style="padding:12px 16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto">
+
+        <!-- Adres Özeti -->
+        <div style="align-self:stretch">
+          <div style="font-size:16px;font-weight:700;color:#111827;line-height:24px;margin-bottom:4px">Adres Bilgileri</div>
+          <div style="background:#F3F4F6;border-radius:8px;padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:14px;font-weight:700;color:#111827">Adres:</span>
+              <span id="o-adres" style="font-size:14px;color:#374151;line-height:20px"></span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:14px;font-weight:700;color:#111827">Adres Tarifi:</span>
+              <span id="o-tarif" style="font-size:14px;color:#374151;line-height:20px"></span>
+            </div>
+            <div style="display:flex;gap:4px;align-items:flex-start">
+              <span style="font-size:14px;font-weight:700;color:#111827;white-space:nowrap">Asansör:</span>
+              <span id="o-asansor" style="font-size:14px;color:#374151;line-height:20px"></span>
+            </div>
+            <div style="display:flex;gap:4px;align-items:flex-start">
+              <span style="font-size:14px;font-weight:700;color:#111827;white-space:nowrap">Adres Başlığı:</span>
+              <span id="o-baslik" style="font-size:14px;color:#374151;line-height:20px"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Harita -->
+        <div style="flex:1;border-radius:8px;overflow:hidden;min-height:280px" id="onayla-map-wrap">
+          <div id="onayla-map" style="width:100%;height:280px"></div>
+        </div>
+
+      </div>
+      <div style="padding:12px 16px 24px;border-top:1px solid #D1D5DB;flex-shrink:0">
+        <button class="devam-btn on" id="kaydet-btn" onclick="kaydetAdres()">Adresi Kaydet</button>
+      </div>
+    </div>
+
+    <!-- Teslimat Adresi Bilgileri ekranı -->
+    <div class="picker" id="picker-teslimat">
+      <div class="picker-header">
+        <button class="picker-back" id="picker-teslimat-back"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="picker-title">Teslimat Adresi Bilgileri</span>
+        <button class="picker-close" id="picker-teslimat-close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div class="picker-list" style="padding:12px 16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto" id="teslimat-body">
+
+        <!-- İl (readonly) -->
+        <div class="field">
+          <div class="field-label">İl <span>*</span></div>
+          <div style="height:44px;padding:10px 12px;background:#F3F4F6;border-radius:8px;border:1px solid #D1D5DB;display:flex;align-items:center;justify-content:space-between">
+            <span id="t-il-val" style="font-size:16px;color:#374151"></span>
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none"><rect x="1" y="7" width="12" height="8" rx="2" stroke="#374151" stroke-width="1.5"/><path d="M4 7V5a3 3 0 0 1 6 0v2" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+
+        <!-- İlçe (tıklanabilir) -->
+        <div class="field">
+          <div class="field-label">İlçe <span>*</span></div>
+          <div class="sel-trigger" id="t-ilce-trigger" style="justify-content:space-between">
+            <span id="t-ilce-val" style="font-size:16px;color:#374151"></span>
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#374151" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+
+        <!-- Mahalle (tıklanabilir) -->
+        <div class="field">
+          <div class="field-label">Mahalle <span>*</span></div>
+          <div class="sel-trigger" id="t-mah-trigger" style="justify-content:space-between">
+            <span id="t-mah-val" style="font-size:16px;color:#374151"></span>
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#374151" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+
+        <!-- Sokak -->
+        <div class="field">
+          <div class="field-label">Sokak <span>*</span></div>
+          <input id="t-sokak" class="t-input" placeholder="Sokak" autocomplete="off" oninput="checkTeslimat()" onclick="document.getElementById('picker-teslimat').dataset.from='teslimat';closePicker('teslimat');openPicker('sokak')" readonly style="cursor:pointer"/>
+        </div>
+
+        <!-- Adres Tarifi -->
+        <div class="field">
+          <div class="field-label">Adres Tarifi <span>*</span></div>
+          <textarea id="t-tarif" class="t-input" placeholder="Adresin kolay bulunması için kısa tarif yazın" autocomplete="off" oninput="growTarif(this)" rows="1" maxlength="100" style="resize:none;overflow:hidden;line-height:24px;padding-top:10px;padding-bottom:10px;height:44px;max-height:116px"></textarea>
+        </div>
+
+        <!-- Bina No + Daire No -->
+        <div style="display:flex;gap:12px">
+          <div class="field" style="flex:1">
+            <div class="field-label">Bina No <span>*</span></div>
+            <input id="t-bina" class="t-input" placeholder="Bina No" autocomplete="off" oninput="checkTeslimat()"/>
+          </div>
+          <div class="field" style="flex:1">
+            <div class="field-label">Daire No <span>*</span></div>
+            <input id="t-daire" class="t-input" placeholder="Daire No" autocomplete="off" oninput="checkTeslimat()"/>
+          </div>
+        </div>
+
+        <!-- Kat + Asansör -->
+        <div style="display:flex;gap:12px">
+          <div class="field" style="flex:1">
+            <div class="field-label">Kat <span>*</span></div>
+            <input id="t-kat" class="t-input" placeholder="Kat" autocomplete="off" oninput="checkTeslimat()"/>
+          </div>
+          <div class="field" style="flex:1">
+            <div class="field-label">Asansör var mı? <span>*</span></div>
+            <select id="t-asansor" class="t-input" onchange="checkTeslimat()" style="appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2210%22 viewBox=%220 0 16 10%22><path d=%22M1 1L8 8L15 1%22 stroke=%22%23374151%22 stroke-width=%222%22 stroke-linecap=%22round%22/></svg>');background-repeat:no-repeat;background-position:right 12px center;padding-right:36px">
+              <option value="" disabled selected style="color:#6B7280">Seç</option>
+              <option value="Evet">Evet</option>
+              <option value="Hayır">Hayır</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Adres Başlığı -->
+        <div class="field">
+          <div class="field-label">Adres Başlığı <span>*</span></div>
+          <input id="t-baslik" class="t-input" placeholder="Adrese bir isim verin" autocomplete="off" oninput="checkTeslimat()"/>
+        </div>
+
+        <!-- Checkbox -->
+        <div style="display:flex;align-items:flex-start;gap:8px">
+          <input type="checkbox" id="t-fatura" checked style="width:16px;height:16px;margin-top:2px;accent-color:#111827;flex-shrink:0;border-radius:4px"/>
+          <label for="t-fatura" style="font-size:12px;color:#1F1A18;line-height:18px;cursor:pointer">Teslimat adresim, fatura adresim olarak kullanılabilir.</label>
+        </div>
+
+      </div>
+      <div style="padding:12px 16px 24px;border-top:1px solid #D1D5DB;flex-shrink:0">
+        <button class="devam-btn" id="t-devam-btn" onclick="teslimatDevam()">Devam</button>
+      </div>
+    </div>
+
+    <!-- Picker: Sokak -->
+    <div class="picker" id="picker-sokak">
+      <div class="picker-header">
+        <button class="picker-back" id="picker-sokak-back"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="picker-title">Sokak/Bina/Firma Arayın</span>
+        <button class="picker-close" id="picker-sokak-close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div style="padding:12px 16px 0">
+        <div class="picker-breadcrumb">
+          <button class="bc-prev" id="bc-sokak-il-btn"></button>
+          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <button class="bc-prev" id="bc-sokak-ilce-btn"></button>
+          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <span class="bc-cur" id="bc-sokak-mah-label"></span>
+        </div>
+      </div>
+      <div class="picker-search">
+        <div class="picker-search-box">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#374151" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="#374151" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input id="picker-sokak-search" placeholder="Ara" autocomplete="off"/>
+          <div class="spinner" id="picker-sokak-spinner"></div>
+        </div>
+      </div>
+      <div style="padding:6px 16px 0">
+        <span style="font-size:12px;color:#6B7280;line-height:16px">Adres arayın. En az 3 karakter yazın. Seçince otomatik olarak önceki ekrana döneceksiniz.</span>
+      </div>
+      <div class="picker-list" id="picker-sokak-list"></div>
+    </div>
+
+    <!-- Picker: Mahalle -->
+    <div class="picker" id="picker-mah">
+      <div class="picker-header">
+        <button class="picker-back" id="picker-mah-back"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="picker-title">Mahalle Seçin</span>
+        <button class="picker-close" id="picker-mah-close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div style="padding:12px 16px 0">
+        <div class="picker-breadcrumb">
+          <button class="bc-prev" id="bc-ilce-btn"></button>
+          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <span class="bc-cur">Mahalle</span>
+        </div>
+      </div>
+      <div class="picker-search">
+        <div class="picker-search-box">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#374151" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="#374151" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input id="picker-mah-search" placeholder="Ara" autocomplete="off"/>
+        </div>
+      </div>
+      <div class="picker-list" id="picker-mah-list"></div>
+    </div>
+
+    <div class="panel-footer">
+      <button class="devam-btn" id="devam-btn">Devam</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Adres verisi (gömülü) ──────────────────────────────
+const ADRES = {"Adana":{"Seyhan":["Çukurova Mah.","Denizli Mah.","Emek Mah.","Güzelyalı Mah.","Ziyapaşa Mah."],"Yüreğir":["Barbaros Mah.","Cumhuriyet Mah.","Fatih Mah.","Girne Mah."],"Çukurova":["Barış Mah.","Belediye Evleri Mah.","Mahfesığmaz Mah."],"Sarıçam":["Dağlıoğlu Mah.","Karacaoğlan Mah."],"Ceyhan":["Cumhuriyet Mah.","Türkmenbaşı Mah."]},"Ankara":{"Çankaya":["Kızılay Mah.","Çukurambar Mah.","Gaziosmanpaşa Mah.","Bahçelievler Mah.","Balgat Mah.","Birlik Mah.","Emek Mah."],"Keçiören":["Aktepe Mah.","Bağlum Mah.","Etlik Mah.","Ovacık Mah."],"Mamak":["Abidinpaşa Mah.","Buğdaylı Mah.","Şahintepe Mah."],"Yenimahalle":["Batıkent Mah.","Demetevler Mah.","Ostim Mah."],"Etimesgut":["Elvankent Mah.","Eryaman Mah.","Yapracık Mah."],"Sincan":["Anıttepe Mah.","Fatih Mah.","Tandoğan Mah."],"Gölbaşı":["Ahlatlıbel Mah.","Tulumtaş Mah."]},"Antalya":{"Muratpaşa":["Fener Mah.","Konyaaltı Mah.","Lara Mah.","Şirinyalı Mah."],"Kepez":["Altıkavak Mah.","Emek Mah.","Varsak Mah."],"Konyaaltı":["Arapsuyu Mah.","Hurma Mah.","Sarısu Mah."],"Alanya":["Kestel Mah.","Mahmutlar Mah.","Oba Mah."],"Manavgat":["Evrenseki Mah.","Ilıca Mah.","Side Mah."]},"Bursa":{"Osmangazi":["Çekirge Mah.","Heykel Mah.","Santral Garaj Mah."],"Nilüfer":["Beşevler Mah.","Görükle Mah.","İhsaniye Mah."],"Yıldırım":["Başpınar Mah.","Değirmenönü Mah.","Millet Mah."],"Gemlik":["Eskigemlik Mah.","Kumla Mah."],"İnegöl":["Gümüşpınar Mah.","Kurşunlu Mah."]},"Denizli":{"Pamukkale":["Altındağ Mah.","Bağbaşı Mah.","Kayabaşı Mah."],"Merkezefendi":["Bereketli Mah.","Çakmak Mah."],"Acıpayam":["Cumhuriyet Mah.","Yeni Mah."]},"Diyarbakır":{"Bağlar":["Cumhuriyet Mah.","Şehitlik Mah."],"Kayapınar":["Diclekent Mah.","Üçkuyular Mah."],"Sur":["Alipaşa Mah.","Fatihpaşa Mah."],"Yenişehir":["Aziziye Mah.","Urfakapı Mah."]},"Eskişehir":{"Odunpazarı":["Akarbaşı Mah.","Büyükdere Mah.","Orta Mah."],"Tepebaşı":["Alanönü Mah.","Emek Mah."]},"Gaziantep":{"Şahinbey":["Bürüciye Mah.","Gazi Mah.","Güvenevler Mah."],"Şehitkamil":["Bahçelievler Mah.","Bağlarbaşı Mah.","Emre Mah."],"Nizip":["Cumhuriyet Mah.","Hamam Mah."]},"Hatay":{"Antakya":["Armutlu Mah.","Güzelburç Mah.","Serinyol Mah."],"İskenderun":["Aziz Mah.","Bahçelievler Mah."],"Payas":["Dörtyol Mah.","Yeni Mah."]},"İstanbul":{"Kadıköy":["Caferağa Mah.","Fenerbahçe Mah.","Göztepe Mah.","Koşuyolu Mah.","Moda Mah.","Osmanağa Mah.","Suadiye Mah."],"Beşiktaş":["Bebek Mah.","Etiler Mah.","Levent Mah.","Nişantaşı Mah.","Ortaköy Mah.","Yıldız Mah."],"Üsküdar":["Bağlarbaşı Mah.","Çengelköy Mah.","Kandilli Mah.","Kısıklı Mah.","Selimiye Mah."],"Şişli":["Esentepe Mah.","Fulya Mah.","Mecidiyeköy Mah.","Nişantaşı Mah."],"Fatih":["Aksaray Mah.","Cerrahpaşa Mah.","Kocamustafapaşa Mah.","Sultanahmet Mah."],"Beyoğlu":["Cihangir Mah.","Galata Mah.","Tarlabaşı Mah.","Tomtom Mah."],"Bakırköy":["Ataköy Mah.","Şenlikköy Mah.","Yeşilköy Mah."],"Maltepe":["Bağlarbaşı Mah.","Cevizli Mah.","Küçükyalı Mah."],"Ataşehir":["Atatürk Mah.","Barbaros Mah.","İçerenköy Mah.","Kayışdağı Mah."],"Sarıyer":["Büyükdere Mah.","Emirgan Mah.","İstinye Mah.","Tarabya Mah."],"Pendik":["Kurtdoğmuş Mah.","Sapanbağları Mah.","Yenişehir Mah."],"Kartal":["Cevizli Mah.","Kordonboyu Mah.","Petrol İş Mah."],"Ümraniye":["Altınşehir Mah.","Çakmak Mah.","Site Mah."],"Tuzla":["Aydınlı Mah.","Cami Mah.","İçmeler Mah."]},"İzmir":{"Konak":["Alsancak Mah.","Çankaya Mah.","Güzelyalı Mah.","Hatay Mah."],"Karşıyaka":["Bostanlı Mah.","Mavişehir Mah.","Atatürk Mah."],"Bornova":["Altındağ Mah.","Çamdibi Mah.","Doğanlar Mah."],"Buca":["Adatepe Mah.","Çamlıkule Mah.","Yenigün Mah."],"Çiğli":["Balatçık Mah.","Egekent Mah.","Işıkkent Mah."],"Bayraklı":["Manavkuyu Mah.","Poligon Mah.","Yamanlar Mah."]},"Kayseri":{"Kocasinan":["Bahçelievler Mah.","Gesi Mah.","Mithatpaşa Mah."],"Melikgazi":["Anbar Mah.","Gevher Nesibe Mah."],"Talas":["Başakpınar Mah.","Harman Mah."]},"Kocaeli":{"İzmit":["Bahçelievler Mah.","Durhasan Mah.","Orhan Mah."],"Gebze":["Balkaya Mah.","Güzeller Mah."],"Darıca":["Cumhuriyet Mah.","Kazım Karabekir Mah."]},"Konya":{"Selçuklu":["Musalla Mah.","Sille Mah.","Yazır Mah."],"Meram":["Bahçelievler Mah.","Köyceğiz Mah."],"Karatay":["Aziziye Mah.","Fevzi Çakmak Mah."]},"Malatya":{"Battalgazi":["Bahçelievler Mah.","Hamidiye Mah."],"Yeşilyurt":["Çöşnük Mah.","Tecde Mah."]},"Manisa":{"Şehzadeler":["Bahçelievler Mah.","Bozkurt Mah.","Taytan Mah."],"Yunusemre":["Adnan Menderes Mah.","Atatürk Mah."],"Akhisar":["Cumhuriyet Mah.","Yeni Mah."],"Turgutlu":["Cumhuriyet Mah.","Yeni Mah."]},"Mersin":{"Yenişehir":["Çankaya Mah.","Bahçelievler Mah.","Fuat Morel Mah."],"Akdeniz":["Camişerif Mah.","Nusratiye Mah."],"Toroslar":["Bahçe Mah.","Güneyyurt Mah."],"Mezitli":["Kuyuluk Mah.","Soli Mah."]},"Muğla":{"Menteşe":["Bahçelievler Mah.","Emirbeyazıt Mah."],"Bodrum":["Bitez Mah.","Gümbet Mah.","Yalıkavak Mah."],"Fethiye":["Çalış Mah.","Ölüdeniz Mah."],"Marmaris":["Beldibi Mah.","İçmeler Mah."]},"Sakarya":{"Adapazarı":["Cumhuriyet Mah.","Karaosman Mah.","Mithatpaşa Mah."],"Serdivan":["Erenler Mah.","Kemalpaşa Mah."]},"Samsun":{"Atakum":["Bahçelievler Mah.","Çarşamba Mah."],"Canik":["Bahçelievler Mah.","Gazi Mah."],"İlkadım":["Kılıçdede Mah.","Yenimahalle Mah."]},"Tekirdağ":{"Süleymanpaşa":["Aydoğdu Mah.","Barbaros Mah.","Hürriyet Mah."],"Çerkezköy":["Cumhuriyet Mah.","Yeni Mah."],"Çorlu":["Alipaşa Mah.","Fevzi Çakmak Mah."]},"Trabzon":{"Ortahisar":["Cumhuriyet Mah.","Hızırbey Mah.","Kemerkaya Mah."],"Akçaabat":["Cumhuriyet Mah.","Yeni Mah."],"Araklı":["Cumhuriyet Mah.","Yeni Mah."]}};
+
+// ── State ──────────────────────────────────────────────
+let st = { il:'', ilce:'', mah:'', sokak:'', lat:null, lon:null, _autofill:null };
+let leafMap = null, leafMarker = null, searchTimer = null;
+
+// ── Adresler ───────────────────────────────────────────
+const addresses = [
+  {title:'Avansas Ofis Kısıklı', detail:'Kısıklı Mah. Ferah Cad. No:10 Kat: 4-5-6-7 Üsküdar 34692 İstanbul'},
+  {title:'Ev', detail:'Nadirağa sokak. Çağlar Apartmanı.( 34 numara ) A Blok. Kat:2 No:4 - Kadıköy / İSTANBUL'},
+  {title:'Bodrum', detail:'Umurça Mahallesi, Kerevit Sokak. Akçaalan Sitesi.'},
+];
+
+function renderAddr() {
+  document.getElementById('addrList').innerHTML = addresses.map((a, i) => `
+    <div class="addr-card">
+      <div style="flex:1">
+        <div class="addr-title">${a.title}</div>
+        <div class="addr-detail">${a.detail}</div>
+      </div>
+      <div class="addr-actions">
+        <button><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M14.5 2.5L17.5 5.5L6.5 16.5H3.5V13.5L14.5 2.5Z" stroke="#6B7280" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+        <button data-del="${i}"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 7h10l-1 10H6L5 7Z" stroke="#6B7280" stroke-width="1.5" stroke-linejoin="round"/><path d="M3 7h14M8 7V5h4v2" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      </div>
+    </div>`).join('');
+}
+
+// ── Panel aç/kapat ─────────────────────────────────────
+function openPanel() {
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('overlay').classList.add('active');
+}
+function closePanel() {
+  document.getElementById('panel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('active');
+  ['il','ilce','mah','sokak','teslimat','onayla'].forEach(k => closePicker(k));
+}
+
+// ── Picker aç/kapat ────────────────────────────────────
+const POPULAR = ['Ankara','Bursa','İstanbul','İzmir'];
+
+function openPicker(key) {
+  document.getElementById('picker-' + key).classList.add('open');
+  const searchEl = document.getElementById('picker-' + key + '-search');
+  if (searchEl) searchEl.value = '';
+  if (key === 'sokak') document.getElementById('picker-sokak-list').innerHTML = '';
+  // Haritayı ve panel-body içeriğini gizle
+  document.getElementById('panel').querySelector('.panel-body').style.visibility = 'hidden';
+  if (key === 'il') renderPickerList('il', Object.keys(ADRES).sort((a,b)=>a.localeCompare(b,'tr')), st.il);
+  else if (key === 'ilce') renderPickerList('ilce', Object.keys(ADRES[st.il]||{}).sort((a,b)=>a.localeCompare(b,'tr')), st.ilce);
+  else if (key === 'mah') renderPickerList('mah', (ADRES[st.il]?.[st.ilce]||['Merkez Mah.','Yeni Mah.','Cumhuriyet Mah.']).sort((a,b)=>a.localeCompare(b,'tr')), st.mah);
+  setTimeout(() => document.getElementById('picker-' + key + '-search').focus(), 300);
+}
+function closePicker(key) {
+  const el = document.getElementById('picker-' + key);
+  if (el) el.classList.remove('open');
+  // Hiç picker açık değilse panel-body'yi geri göster
+  const anyOpen = ['il','ilce','mah','sokak','teslimat','onayla'].some(k => document.getElementById('picker-'+k).classList.contains('open'));
+  if (!anyOpen) document.getElementById('panel').querySelector('.panel-body').style.visibility = 'visible';
+}
+
+// ── Picker liste render ────────────────────────────────
+function renderPickerList(key, items, selected, filter='') {
+  const list = document.getElementById('picker-' + key + '-list');
+  const filtered = filter ? items.filter(v => v.toLowerCase().includes(filter.toLowerCase())) : items;
+  let html = '';
+
+  if (key === 'il' && !filter) {
+    // En çok seçilenler bölümü
+    html += '<div class="picker-group-label">En Çok Seçilenler</div>';
+    POPULAR.forEach(v => {
+      html += `<div class="picker-row${v===selected?' active':''}" data-value="${v}">${v}</div>`;
+    });
+    // Alfabetik gruplar
+    let lastLetter = '';
+    filtered.forEach(v => {
+      const letter = v[0].toUpperCase();
+      if (letter !== lastLetter) {
+        html += `<div class="picker-group-label">${letter}</div>`;
+        lastLetter = letter;
+      }
+      html += `<div class="picker-row${v===selected?' active':''}" data-value="${v}">${v}</div>`;
+    });
+  } else {
+    let lastLetter = '';
+    filtered.forEach(v => {
+      const letter = v[0].toUpperCase();
+      if (letter !== lastLetter) {
+        html += `<div class="picker-group-label">${letter}</div>`;
+        lastLetter = letter;
+      }
+      html += `<div class="picker-row${v===selected?' active':''}" data-value="${v}">${v}</div>`;
+    });
+  }
+
+  list.innerHTML = html;
+}
+
+// ── Picker item tıklama ────────────────────────────────
+document.getElementById('picker-il-list').addEventListener('click', function(e) {
+  const row = e.target.closest('.picker-row');
+  if (!row) return;
+  const v = row.dataset.value;
+  st.il = v; st.ilce = ''; st.mah = ''; st.sokak = '';
+  setVal('val-il', v);
+  resetVal('val-ilce'); resetVal('val-mah');
+  document.getElementById('trigger-ilce').classList.remove('disabled');
+  document.getElementById('trigger-mah').classList.add('disabled');
+  disableSokak();
+  // Haritayı ile zoom yap
+  scheduleGeocode(v + ', Türkiye');
+  // Breadcrumb güncelle
+  document.getElementById('bc-il-btn').textContent = v;
+  // Otomatik ilçe picker aç
+  closePicker('il');
+  openPicker('ilce');
+  checkForm();
+});
+
+document.getElementById('picker-ilce-list').addEventListener('click', function(e) {
+  const row = e.target.closest('.picker-row');
+  if (!row) return;
+  const v = row.dataset.value;
+  st.ilce = v; st.mah = ''; st.sokak = '';
+  setVal('val-ilce', v);
+  resetVal('val-mah');
+  document.getElementById('trigger-mah').classList.remove('disabled');
+  disableSokak();
+  scheduleGeocode(v + ', ' + st.il + ', Türkiye');
+  // Breadcrumb güncelle
+  document.getElementById('bc-ilce-btn').textContent = v;
+  // Otomatik mahalle picker aç
+  closePicker('ilce');
+  openPicker('mah');
+  checkForm();
+});
+
+document.getElementById('picker-mah-list').addEventListener('click', function(e) {
+  const row = e.target.closest('.picker-row');
+  if (!row) return;
+  const v = row.dataset.value;
+  st.mah = v; st.sokak = '';
+  setVal('val-mah', v);
+  enableSokak();
+  const mahTemiz = v.replace(/\s*mah\.?/gi, '').trim();
+  scheduleGeocode(mahTemiz + ', ' + st.ilce + ', ' + st.il + ', Türkiye');
+  // Breadcrumb güncelle
+  document.getElementById('bc-sokak-il-btn').textContent = st.il;
+  document.getElementById('bc-sokak-ilce-btn').textContent = st.ilce;
+  document.getElementById('bc-sokak-mah-label').textContent = v;
+  // Sokak picker aç
+  closePicker('mah');
+  openPicker('sokak');
+  checkForm();
+});
+
+// ── Sokak picker arama ────────────────────────────────
+let sokakPickerTimer = null;
+document.getElementById('picker-sokak-search').addEventListener('input', function() {
+  const q = this.value.trim();
+  clearTimeout(sokakPickerTimer);
+  const list = document.getElementById('picker-sokak-list');
+  if (q.length < 3) { list.innerHTML = ''; return; }
+  list.innerHTML = '<div style="padding:16px;color:#6B7280;font-size:14px">Aranıyor...</div>';
+  sokakPickerTimer = setTimeout(async () => {
+    try {
+      const mahTemiz = st.mah.replace(/\s*mah\.?/gi, '').trim();
+
+      // Hardcoded Avansas adresi — "ferah" içeriyorsa ilk sıraya ekle
+      const AVANSAS = {
+        display_name: 'Avansas Ofis Malzemeleri Tic. A.Ş. - Ferah Cad. No:10',
+        lat: '41.0334', lon: '29.0542',
+        _main: 'Avansas Ofis Malzemeleri Tic. A.Ş.',
+        _sub: 'Ferah Cad. No:10, Kısıklı Mah., Üsküdar, İstanbul',
+        _label: 'Avansas Ofis Malzemeleri Tic. A.Ş., Ferah Cad. No:10, Kısıklı Mah., Üsküdar, İstanbul',
+        _autofill: { sokak: 'Ferah Caddesi', bina: '10', daire: '', kat: '4', tarif: 'Avansas Ofis Malzemeleri Tic. A.Ş. | Posta Kodu: 34692' }
+      };
+
+      // Önce mahalle+ilçe+il ile dene
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+mahTemiz+', '+st.ilce+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr`;
+      const r = await fetch(url);
+      let data = await r.json();
+      if (!data.length) {
+        const url2 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+st.ilce+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr`;
+        const r2 = await fetch(url2);
+        data = await r2.json();
+        if (!data.length) {
+          const url3 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr`;
+          const r3 = await fetch(url3);
+          data = await r3.json();
+        }
+      }
+      // Avansas hardcode: sorgu "ferah" veya "avansas" içeriyorsa başa ekle
+      if ((q.toLowerCase().includes('ferah') || q.toLowerCase().includes('avansas')) && st.ilce === 'Üsküdar') {
+        data = [AVANSAS, ...data.filter(d => !d.display_name.toLowerCase().includes('ferah caddesi no:10'))];
+      }
+      renderSokakResults(list, data);
+    } catch(e) {
+      list.innerHTML = '<div style="padding:16px;color:#DD291F;font-size:14px">Bağlantı hatası</div>';
+    }
+  }, 1500);
+});
+
+function renderSokakResults(list, data) {
+  list.innerHTML = data.map(item => {
+    const main = item._main || item.display_name.split(', ').slice(0,2).join(', ');
+    const sub  = item._sub  || item.display_name.split(', ').slice(2,5).join(', ');
+    const af = item._autofill ? ` data-autofill='${JSON.stringify(item._autofill)}'` : '';
+    const dl = item._label ? ` data-label="${item._label}"` : '';
+    return `<div class="picker-row" style="flex-direction:column;align-items:flex-start;height:auto;min-height:56px;padding:10px 16px;gap:2px" data-name="${main}" data-lat="${item.lat}" data-lon="${item.lon}"${af}${dl}>
+      <span style="font-weight:600;font-size:15px">${main}</span>
+      <span style="font-size:12px;color:#6B7280">${sub}</span>
+    </div>`;
+  }).join('') || '<div style="padding:16px;color:#6B7280;font-size:14px">Sonuç bulunamadı</div>';
+}
+
+document.getElementById('picker-sokak-list').addEventListener('click', function(e) {
+  const row = e.target.closest('.picker-row');
+  if (!row || !row.dataset.name) return;
+  const name = row.dataset.name;
+  st.sokak = name;
+  st.lat = parseFloat(row.dataset.lat);
+  st.lon = parseFloat(row.dataset.lon);
+  const autofill = row.dataset.autofill ? JSON.parse(row.dataset.autofill) : null;
+  const sokakLabel = autofill ? autofill.sokak : name;
+  const displayLabel = row.dataset.label || sokakLabel;
+  st.sokak = sokakLabel;
+  st._autofill = autofill || null;
+  document.getElementById('sokak-input').value = displayLabel;
+  updatePin(st.lat, st.lon, displayLabel);
+  const fromTeslimat = document.getElementById('picker-teslimat').dataset.from === 'teslimat';
+  closePicker('sokak');
+  document.getElementById('t-sokak').value = sokakLabel;
+  if (autofill) {
+    if (autofill.bina)  document.getElementById('t-bina').value  = autofill.bina;
+    if (autofill.daire) document.getElementById('t-daire').value = autofill.daire;
+    if (autofill.kat)   document.getElementById('t-kat').value   = autofill.kat;
+    if (autofill.tarif) { document.getElementById('t-tarif').value = autofill.tarif; growTarif(document.getElementById('t-tarif')); }
+  }
+  checkTeslimat();
+  if (fromTeslimat) {
+    openPicker('teslimat');
+  }
+  checkForm();
+});
+
+// ── Picker arama ───────────────────────────────────────
+document.getElementById('picker-il-search').addEventListener('input', function() {
+  const items = Object.keys(ADRES).sort((a,b)=>a.localeCompare(b,'tr'));
+  renderPickerList('il', items, st.il, this.value);
+});
+document.getElementById('picker-ilce-search').addEventListener('input', function() {
+  const items = Object.keys(ADRES[st.il]||{}).sort((a,b)=>a.localeCompare(b,'tr'));
+  renderPickerList('ilce', items, st.ilce, this.value);
+});
+document.getElementById('picker-mah-search').addEventListener('input', function() {
+  const items = (ADRES[st.il]?.[st.ilce]||[]).sort((a,b)=>a.localeCompare(b,'tr'));
+  renderPickerList('mah', items, st.mah, this.value);
+});
+
+// ── Picker back/close butonları ────────────────────────
+document.getElementById('picker-il-back').addEventListener('click', () => closePicker('il'));
+document.getElementById('picker-il-close').addEventListener('click', () => { ['il','ilce','mah'].forEach(k=>closePicker(k)); });
+document.getElementById('picker-ilce-back').addEventListener('click', () => { closePicker('ilce'); openPicker('il'); });
+document.getElementById('picker-ilce-close').addEventListener('click', () => { ['il','ilce','mah'].forEach(k=>closePicker(k)); });
+document.getElementById('picker-mah-back').addEventListener('click', () => { closePicker('mah'); openPicker('ilce'); });
+document.getElementById('picker-mah-close').addEventListener('click', () => { ['il','ilce','mah'].forEach(k=>closePicker(k)); });
+document.getElementById('picker-sokak-back').addEventListener('click', () => { closePicker('sokak'); openPicker('mah'); });
+document.getElementById('picker-sokak-close').addEventListener('click', () => { ['il','ilce','mah','sokak'].forEach(k=>closePicker(k)); });
+document.getElementById('bc-sokak-il-btn').addEventListener('click', () => { closePicker('sokak'); openPicker('il'); });
+document.getElementById('bc-sokak-ilce-btn').addEventListener('click', () => { closePicker('sokak'); openPicker('ilce'); });
+document.getElementById('picker-teslimat-back').addEventListener('click', () => { closePicker('teslimat'); });
+document.getElementById('picker-onayla-back').addEventListener('click', () => { closePicker('onayla'); openPicker('teslimat'); });
+document.getElementById('picker-onayla-close').addEventListener('click', () => { ['il','ilce','mah','sokak','teslimat','onayla'].forEach(k=>closePicker(k)); });
+document.getElementById('picker-teslimat-close').addEventListener('click', () => { ['il','ilce','mah','sokak','teslimat'].forEach(k=>closePicker(k)); });
+// Teslimat il/ilce/mah trigger
+document.getElementById('t-ilce-trigger').addEventListener('click', () => { closePicker('teslimat'); openPicker('ilce'); });
+document.getElementById('t-mah-trigger').addEventListener('click', () => { closePicker('teslimat'); openPicker('mah'); });
+// Breadcrumb tıklama
+document.getElementById('bc-il-btn').addEventListener('click', () => { closePicker('ilce'); openPicker('il'); });
+document.getElementById('bc-ilce-btn').addEventListener('click', () => { closePicker('mah'); openPicker('ilce'); });
+
+// ── Trigger tıklama ────────────────────────────────────
+document.getElementById('trigger-il').addEventListener('click', () => openPicker('il'));
+document.getElementById('trigger-ilce').addEventListener('click', () => { if (!document.getElementById('trigger-ilce').classList.contains('disabled')) openPicker('ilce'); });
+document.getElementById('trigger-mah').addEventListener('click', () => { if (!document.getElementById('trigger-mah').classList.contains('disabled')) openPicker('mah'); });
+
+// ── Helpers ────────────────────────────────────────────
+function setVal(id, v) { const el = document.getElementById(id); el.textContent = v; el.classList.remove('ph'); }
+function resetVal(id)  { const el = document.getElementById(id); el.textContent = 'Seç'; el.classList.add('ph'); }
+
+function enableSokak() {
+  const inp = document.getElementById('sokak-input');
+  inp.disabled = false;
+  inp.placeholder = 'Sokak, bina veya firma ara...';
+  document.getElementById('search-box').classList.add('on');
+  document.getElementById('sic1').setAttribute('stroke','#6B7280');
+  document.getElementById('sic2').setAttribute('stroke','#6B7280');
+  document.getElementById('helper-txt').textContent = '*Konumu haritadan da seçebilirsiniz.';
+}
+function disableSokak() {
+  const inp = document.getElementById('sokak-input');
+  inp.disabled = true; inp.value = ''; st.sokak = '';
+  document.getElementById('search-box').classList.remove('on');
+  document.getElementById('sugg-list').classList.remove('open');
+  document.getElementById('sic1').setAttribute('stroke','#9CA3AF');
+  document.getElementById('sic2').setAttribute('stroke','#9CA3AF');
+  document.getElementById('helper-txt').textContent = '*Arama yapmadan önce il, ilçe ve mahalle seçin.';
+}
+
+function checkForm() {
+  const ok = st.il && st.ilce && st.mah && st.sokak;
+  document.getElementById('devam-btn').classList.toggle('on', !!ok);
+}
+
+// ── Sokak arama (Nominatim) ────────────────────────────
+document.getElementById('search-box').addEventListener('click', function() {
+  if (!st.mah) return;
+  document.getElementById('bc-sokak-il-btn').textContent = st.il;
+  document.getElementById('bc-sokak-ilce-btn').textContent = st.ilce;
+  document.getElementById('bc-sokak-mah-label').textContent = st.mah;
+  document.getElementById('picker-teslimat').dataset.from = '';
+  openPicker('sokak');
+});
+
+document.getElementById('sokak-input').addEventListener('input', function() {
+  st.sokak = this.value.trim();
+  checkForm();
+  clearTimeout(searchTimer);
+  const sugg = document.getElementById('sugg-list');
+  if (st.sokak.length < 3) { sugg.classList.remove('open'); return; }
+  document.getElementById('spinner').style.display = 'block';
+  searchTimer = setTimeout(() => searchAddr(st.sokak), 700);
+});
+
+async function searchAddr(q) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+st.mah+', '+st.ilce+', '+st.il+', Türkiye')}&format=json&limit=5&countrycodes=tr&accept-language=tr`;
+    const r = await fetch(url, { headers: {'Accept-Language':'tr'} });
+    const data = await r.json();
+    document.getElementById('spinner').style.display = 'none';
+    showSugg(data);
+  } catch(e) { document.getElementById('spinner').style.display = 'none'; }
+}
+
+function showSugg(results) {
+  const sugg = document.getElementById('sugg-list');
+  sugg.innerHTML = '';
+  if (!results.length) { sugg.classList.remove('open'); return; }
+  results.forEach((r, i) => {
+    const div = document.createElement('div');
+    div.className = 'sugg-item';
+    const parts = r.display_name.split(', ');
+    div.innerHTML = `<div class="main">${parts.slice(0,2).join(', ')}</div><div class="sub">${parts.slice(2,5).join(', ')}</div>`;
+    div.dataset.idx = i;
+    div.dataset.name = parts.slice(0,3).join(', ');
+    div.dataset.lat = r.lat;
+    div.dataset.lon = r.lon;
+    sugg.appendChild(div);
+  });
+  sugg.classList.add('open');
+}
+
+document.getElementById('sugg-list').addEventListener('click', function(e) {
+  const item = e.target.closest('.sugg-item');
+  if (!item) return;
+  document.getElementById('sokak-input').value = item.dataset.name;
+  st.sokak = item.dataset.name;
+  st.lat = parseFloat(item.dataset.lat);
+  st.lon = parseFloat(item.dataset.lon);
+  this.classList.remove('open');
+  updatePin(st.lat, st.lon, st.sokak);
+  checkForm();
+});
+
+// ── Harita ─────────────────────────────────────────────
+function initMapOnce() {
+  if (leafMap) { setTimeout(() => leafMap.invalidateSize(), 400); return; }
+  setTimeout(() => {
+    initMap(39.0, 35.0, 6);
+  }, 400);
+}
+
+let geocodeTimer = null;
+function scheduleGeocode(q) {
+  clearTimeout(geocodeTimer);
+  geocodeTimer = setTimeout(() => geocodeMap(q), 1200);
+}
+
+async function geocodeMap(q) {
+  if (!leafMap) initMap(39.0, 35.0, 6);
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=tr`);
+    const d = await r.json();
+    if (d[0]) {
+      leafMap.setView([+d[0].lat, +d[0].lon], 14);
+      if (leafMarker) leafMap.removeLayer(leafMarker);
+      leafMarker = L.marker([+d[0].lat, +d[0].lon]).addTo(leafMap);
+    }
+  } catch(e) {}
+}
+
+function initMap(lat, lon, z) {
+  leafMap = L.map('map', {zoomControl:true, attributionControl:false}).setView([lat, lon], z);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19}).addTo(leafMap);
+  leafMap.on('click', function(e) {
+    if (leafMarker) leafMap.removeLayer(leafMarker);
+    leafMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(leafMap);
+    st.lat = e.latlng.lat; st.lon = e.latlng.lng;
+    reverseGeo(e.latlng.lat, e.latlng.lng);
+  });
+}
+
+function updatePin(lat, lon, label) {
+  if (!leafMap) { showMap(); initMap(lat, lon, 16); }
+  else { leafMap.setView([lat, lon], 16); setTimeout(() => leafMap.invalidateSize(), 100); }
+  if (leafMarker) leafMap.removeLayer(leafMarker);
+  leafMarker = L.marker([lat, lon]).addTo(leafMap).bindPopup(label).openPopup();
+}
+
+async function reverseGeo(lat, lon) {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=tr`);
+    const d = await r.json();
+    if (d.display_name) {
+      const label = d.display_name.split(', ').slice(0,3).join(', ');
+      document.getElementById('sokak-input').value = label;
+      st.sokak = label; checkForm();
+    }
+  } catch(e) {}
+}
+
+function showMap() {
+  setTimeout(() => { if (leafMap) leafMap.invalidateSize(); }, 150);
+}
+function hideMap() {
+  if (leafMap) { leafMap.setView([39.0, 35.0], 6); if (leafMarker) { leafMap.removeLayer(leafMarker); leafMarker = null; } }
+}
+
+// ── Devam ──────────────────────────────────────────────
+document.getElementById('devam-btn').addEventListener('click', function() {
+  if (!this.classList.contains('on')) return;
+  openTeslimat();
+});
+
+function parseAdres(raw) {
+  // "Ferah Cad. No:10 Kat:4" gibi string'i parse et
+  const sokakMatch = raw.match(/^([^,\d]+?)(?:\s+[Nn][Oo][:.]?\s*\d|,|$)/);
+  const binaMatch = raw.match(/[Nn][Oo][:.]?\s*(\d+[A-Za-z]?)/);
+  const daireMatch = raw.match(/[Dd](?:aire|AIRE)?[:.]?\s*(\d+)/);
+  const katMatch = raw.match(/[Kk]at[:.]?\s*(\d+)/);
+  return {
+    sokak: sokakMatch ? sokakMatch[1].trim() : raw,
+    bina: binaMatch ? binaMatch[1] : '',
+    daire: daireMatch ? daireMatch[1] : '',
+    kat: katMatch ? katMatch[1] : '',
+    tarif: raw.length > 30 ? raw : ''
+  };
+}
+
+function openTeslimat() {
+  // Verileri doldur
+  document.getElementById('t-il-val').textContent = st.il;
+  document.getElementById('t-ilce-val').textContent = st.ilce;
+  document.getElementById('t-mah-val').textContent = st.mah;
+  // Sokak verisini parse et — zaten autofill ile dolu alanları sıfırlama
+  const parsed = parseAdres(st.sokak || '');
+  const af = st._autofill;
+  document.getElementById('t-sokak').value = af ? af.sokak : (parsed.sokak || st.sokak);
+  document.getElementById('t-bina').value  = af ? af.bina  : (parsed.bina  || '');
+  document.getElementById('t-daire').value = af ? af.daire : (parsed.daire || '');
+  document.getElementById('t-kat').value   = af ? af.kat   : (parsed.kat   || '');
+  document.getElementById('t-tarif').value = af ? af.tarif : '';
+  if (af && af.tarif) growTarif(document.getElementById('t-tarif'));
+  document.getElementById('t-baslik').value = '';
+  document.getElementById('t-asansor').value = '';
+  document.getElementById('t-devam-btn').classList.remove('on');
+  openPicker('teslimat');
+}
+
+function toggleAsansor() {
+  const dd = document.getElementById('t-asansor-dd');
+  dd.classList.toggle('open');
+}
+function selAsansor(v) {
+  document.getElementById('t-asansor-val').textContent = v;
+  document.getElementById('t-asansor-val').style.color = '#374151';
+  document.getElementById('t-asansor-dd').classList.remove('open');
+  checkTeslimat();
+}
+
+function growTarif(el) {
+  // Max 2 satır, max 120 karakter
+  const lines = el.value.split('\n');
+  if (lines.length > 3) {
+    el.value = lines.slice(0, 3).join('\n');
+  }
+  el.style.height = '44px';
+  el.style.height = Math.min(el.scrollHeight, 116) + 'px';
+  checkTeslimat();
+}
+
+function checkTeslimat() {
+  const ok = ['t-sokak','t-bina','t-daire','t-kat','t-baslik'].every(id => document.getElementById(id).value.trim()) &&
+             document.getElementById('t-asansor').value !== '';
+  document.getElementById('t-devam-btn').classList.toggle('on', ok);
+}
+
+function teslimatDevam() {
+  if (!document.getElementById('t-devam-btn').classList.contains('on')) return;
+  // Onayla ekranını doldur ve aç
+  const sokak = document.getElementById('t-sokak').value.trim();
+  const bina  = document.getElementById('t-bina').value.trim();
+  const daire = document.getElementById('t-daire').value.trim();
+  const kat   = document.getElementById('t-kat').value.trim();
+  const tarif = document.getElementById('t-tarif').value.trim();
+  const asansor = document.getElementById('t-asansor').value;
+  const baslik  = document.getElementById('t-baslik').value.trim();
+
+  document.getElementById('o-adres').textContent =
+    sokak + ' No:' + bina + ' D:' + daire + ' Kat:' + kat + ', ' + st.mah + ', ' + st.ilce + ', ' + st.il.toUpperCase();
+  document.getElementById('o-tarif').textContent  = tarif || '—';
+  document.getElementById('o-asansor').textContent = asansor;
+  document.getElementById('o-baslik').textContent  = baslik;
+
+  closePicker('teslimat');
+  openPicker('onayla');
+
+  // Haritayı başlat / güncelle
+  setTimeout(() => {
+    const wrap = document.getElementById('onayla-map');
+    if (!window._onaylaMap) {
+      window._onaylaMap = L.map('onayla-map', { zoomControl:true, attributionControl:false });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(window._onaylaMap);
+    }
+    window._onaylaMap.invalidateSize();
+    if (st.lat && st.lon) {
+      window._onaylaMap.setView([st.lat, st.lon], 17);
+      if (window._onaylaMarker) window._onaylaMarker.remove();
+      window._onaylaMarker = L.marker([st.lat, st.lon]).addTo(window._onaylaMap);
+    } else {
+      // Koordinat yoksa geocode et
+      const q = sokak + ', ' + st.mah.replace(/\s*mah\.?/gi,'').trim() + ', ' + st.ilce + ', ' + st.il;
+      fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&format=json&limit=1&countrycodes=tr')
+        .then(r=>r.json()).then(data=>{
+          if (data[0]) {
+            const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon);
+            window._onaylaMap.setView([lat, lon], 17);
+            if (window._onaylaMarker) window._onaylaMarker.remove();
+            window._onaylaMarker = L.marker([lat, lon]).addTo(window._onaylaMap);
+          }
+        });
+    }
+  }, 100);
+}
+
+function kaydetAdres() {
+  const sokak  = document.getElementById('t-sokak').value.trim();
+  const bina   = document.getElementById('t-bina').value.trim();
+  const daire  = document.getElementById('t-daire').value.trim();
+  const kat    = document.getElementById('t-kat').value.trim();
+  const baslik = document.getElementById('t-baslik').value.trim();
+  addresses.push({
+    title: baslik,
+    detail: sokak + ' No:' + bina + ' D:' + daire + ' Kat:' + kat + ' ' + st.mah + ' / ' + st.ilce + ' / ' + st.il.toUpperCase()
+  });
+  renderAddr();
+  st = { il:'', ilce:'', mah:'', sokak:'', lat:null, lon:null, _autofill:null };
+  resetVal('val-il'); resetVal('val-ilce'); resetVal('val-mah');
+  document.getElementById('trigger-ilce').classList.add('disabled');
+  document.getElementById('trigger-mah').classList.add('disabled');
+  disableSokak(); hideMap();
+  document.getElementById('devam-btn').classList.remove('on');
+  ['il','ilce','mah','sokak','teslimat','onayla'].forEach(k => closePicker(k));
+  closePanel();
+}
+
+// ── Global click — dropdown/öneri kapat ───────────────
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.search-wrap')) document.getElementById('sugg-list').classList.remove('open');
+});
+
+// ── Silme ──────────────────────────────────────────────
+document.getElementById('addrList').addEventListener('click', function(e) {
+  const btn = e.target.closest('[data-del]');
+  if (!btn) return;
+  addresses.splice(+btn.dataset.del, 1);
+  renderAddr();
+});
+
+// ── Panel / overlay tıklama ────────────────────────────
+document.getElementById('btnYeniAdres').addEventListener('click', () => { openPanel(); initMapOnce(); });
+document.getElementById('btnKapat').addEventListener('click', closePanel);
+document.getElementById('overlay').addEventListener('click', closePanel);
+
+// ── İlleri doldur ──────────────────────────────────────
+// picker lists are built on open
+renderAddr();
+</script>
+</body>
+</html>
