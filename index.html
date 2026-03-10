@@ -97,6 +97,14 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
 .helper{font-size:12px;color:#6B7280;line-height:16px}
 .map-box{height:200px;border-radius:8px;overflow:hidden;flex-shrink:0}
 #map{height:100%;width:100%}
+.field-error{display:none;color:#C9251C;font-size:12px;font-weight:600;line-height:16px;margin-top:4px}
+.field-error.show{display:block}
+.trigger-error{outline:1px solid #C9251C !important}
+.trigger-error .val{color:#C9251C !important}
+.search-box-error{outline:1px solid #C9251C !important}
+.search-box-error svg path{stroke:#C9251C}
+.search-box-error input{color:#C9251C}
+.search-box-error input::placeholder{color:#C9251C}
 .t-input{width:100%;height:44px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #9CA3AF;font-size:16px;font-family:'Open Sans',sans-serif;color:#374151;outline:none;transition:border-color .15s}
 .t-input:focus{border-color:#0039A6}
 .t-input::placeholder{color:#6B7280}
@@ -156,31 +164,34 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
     <div class="panel-body">
 
       <div class="field">
-        <div class="field-label">İl <span>*</span></div>
+        <div class="field-label" id="lbl-il">İl <span>*</span></div>
         <div class="sel-trigger" id="trigger-il">
           <span class="val ph" id="val-il">Seç</span>
           <svg class="chevron" width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#374151" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
+        <span class="field-error" id="err-il">*Zorunlu alan</span>
       </div>
 
       <div class="field">
-        <div class="field-label">İlçe <span>*</span></div>
+        <div class="field-label" id="lbl-ilce">İlçe <span>*</span></div>
         <div class="sel-trigger disabled" id="trigger-ilce">
           <span class="val ph" id="val-ilce">Seç</span>
           <svg class="chevron" width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
+        <span class="field-error" id="err-ilce">*Zorunlu alan</span>
       </div>
 
       <div class="field">
-        <div class="field-label">Mahalle <span>*</span></div>
+        <div class="field-label" id="lbl-mah">Mahalle <span>*</span></div>
         <div class="sel-trigger disabled" id="trigger-mah">
           <span class="val ph" id="val-mah">Seç</span>
           <svg class="chevron" width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
+        <span class="field-error" id="err-mah">*Zorunlu alan</span>
       </div>
 
       <div class="field">
-        <div class="field-label">Sokak/Bina/Firma <span>*</span></div>
+        <div class="field-label" id="lbl-sokak">Sokak/Bina/Firma <span>*</span></div>
         <div class="search-wrap">
           <div class="search-box" id="search-box">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#9CA3AF" stroke-width="1.8" id="sic1"/><path d="M13.5 13.5L17 17" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" id="sic2"/></svg>
@@ -189,8 +200,10 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
           </div>
           <div class="sugg-list" id="sugg-list"></div>
         </div>
-        <span class="helper" id="helper-txt">*Arama yapmadan önce il, ilçe ve mahalle seçin.</span>
+        <span class="field-error" id="err-sokak">*Zorunlu alan</span>
       </div>
+
+      <div style="font-size:12px;color:#6B7280;line-height:16px;padding:0 0 4px">*Alanların doldurulması zorunludur.</div>
 
       <div class="map-box" id="map-box"><div id="map"></div></div>
 
@@ -426,7 +439,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
     </div>
 
     <div class="panel-footer">
-      <button class="devam-btn" id="devam-btn">Devam</button>
+      <button class="devam-btn on" id="devam-btn">Devam</button>
     </div>
   </div>
 </div>
@@ -484,7 +497,13 @@ function openPicker(key) {
   if (key === 'il') renderPickerList('il', Object.keys(ADRES).sort((a,b)=>a.localeCompare(b,'tr')), st.il);
   else if (key === 'ilce') renderPickerList('ilce', Object.keys(ADRES[st.il]||{}).sort((a,b)=>a.localeCompare(b,'tr')), st.ilce);
   else if (key === 'mah') renderPickerList('mah', (ADRES[st.il]?.[st.ilce]||['Merkez Mah.','Yeni Mah.','Cumhuriyet Mah.']).sort((a,b)=>a.localeCompare(b,'tr')), st.mah);
-  // focus kaldırıldı — klavye otomatik açılmasın
+  // Sadece sokak picker'ında focus ver
+  if (key === 'sokak') {
+    setTimeout(() => {
+      const el = document.getElementById('picker-sokak-search');
+      if (el) el.focus();
+    }, 300);
+  }
 }
 function closePicker(key) {
   const el = document.getElementById('picker-' + key);
@@ -731,7 +750,7 @@ function enableSokak() {
   document.getElementById('search-box').classList.add('on');
   document.getElementById('sic1').setAttribute('stroke','#6B7280');
   document.getElementById('sic2').setAttribute('stroke','#6B7280');
-  document.getElementById('helper-txt').textContent = '*Konumu haritadan da seçebilirsiniz.';
+
 }
 function disableSokak() {
   const inp = document.getElementById('sokak-input');
@@ -740,12 +759,27 @@ function disableSokak() {
   document.getElementById('sugg-list').classList.remove('open');
   document.getElementById('sic1').setAttribute('stroke','#9CA3AF');
   document.getElementById('sic2').setAttribute('stroke','#9CA3AF');
-  document.getElementById('helper-txt').textContent = '*Arama yapmadan önce il, ilçe ve mahalle seçin.';
+
 }
 
 function checkForm() {
-  const ok = st.il && st.ilce && st.mah && st.sokak;
-  document.getElementById('devam-btn').classList.toggle('on', !!ok);
+  // Doldurulmuş alanların hata stilini temizle
+  const checks = [
+    { val: st.il,    errId: 'err-il',    triggerId: 'trigger-il',   lblId: 'lbl-il' },
+    { val: st.ilce,  errId: 'err-ilce',  triggerId: 'trigger-ilce', lblId: 'lbl-ilce' },
+    { val: st.mah,   errId: 'err-mah',   triggerId: 'trigger-mah',  lblId: 'lbl-mah' },
+    { val: st.sokak, errId: 'err-sokak', triggerId: 'search-box',   lblId: 'lbl-sokak' },
+  ];
+  checks.forEach(c => {
+    if (c.val) {
+      const errEl = document.getElementById(c.errId);
+      const triggerEl = document.getElementById(c.triggerId);
+      const lblEl = document.getElementById(c.lblId);
+      if (errEl) errEl.classList.remove('show');
+      if (triggerEl) triggerEl.classList.remove('trigger-error');
+      if (lblEl) lblEl.style.color = '';
+    }
+  });
 }
 
 // ── Sokak arama (Nominatim) ────────────────────────────
@@ -874,7 +908,30 @@ function hideMap() {
 
 // ── Devam ──────────────────────────────────────────────
 document.getElementById('devam-btn').addEventListener('click', function() {
-  if (!this.classList.contains('on')) return;
+  // Validation
+  let valid = true;
+  const checks = [
+    { val: st.il,    errId: 'err-il',    triggerId: 'trigger-il',   lblId: 'lbl-il' },
+    { val: st.ilce,  errId: 'err-ilce',  triggerId: 'trigger-ilce', lblId: 'lbl-ilce' },
+    { val: st.mah,   errId: 'err-mah',   triggerId: 'trigger-mah',  lblId: 'lbl-mah' },
+    { val: st.sokak, errId: 'err-sokak', triggerId: 'search-box',   lblId: 'lbl-sokak' },
+  ];
+  checks.forEach(c => {
+    const errEl = document.getElementById(c.errId);
+    const triggerEl = document.getElementById(c.triggerId);
+    const lblEl = document.getElementById(c.lblId);
+    if (!c.val) {
+      valid = false;
+      if (errEl) errEl.classList.add('show');
+      if (triggerEl) triggerEl.classList.add('trigger-error');
+      if (lblEl) lblEl.style.color = '#C9251C';
+    } else {
+      if (errEl) errEl.classList.remove('show');
+      if (triggerEl) triggerEl.classList.remove('trigger-error');
+      if (lblEl) lblEl.style.color = '';
+    }
+  });
+  if (!valid) return;
   openTeslimat();
 });
 
