@@ -852,11 +852,21 @@ function renderSokakResults(data) {
   if (!data.length) { list.innerHTML='<div style="padding:14px 16px;color:#8D93A0;font-size:14px">Sonuç bulunamadı</div>'; return; }
   list.innerHTML = '';
   data.forEach(item => {
-    const main = item._main || item.display_name.split(', ').slice(0,2).join(', ');
+    const _poiName = (item.namedetails && item.namedetails.name) || item.name || '';
+    const addr = item.address || {};
+    const parts = [
+      _poiName || addr.amenity || addr.building || '',
+      addr.road || addr.pedestrian || addr.footway || '',
+      addr.house_number ? 'No:' + addr.house_number : '',
+      addr.suburb || addr.neighbourhood || addr.quarter || '',
+      addr.district || addr.town || addr.city_district || '',
+      addr.city || addr.province || ''
+    ].filter(Boolean);
+    const main = item._main || (parts.length ? parts.join(', ') : item.display_name.split(', ').slice(0,4).join(', '));
     const sub  = item._sub  || item.display_name.split(', ').slice(2,5).join(', ');
     // POI name: namedetails.name > name > boş
     if (!item._autofill) {
-      const poiName = (item.namedetails && item.namedetails.name) || item.name || '';
+      const poiName = _poiName;
       item._autofill = {
         sokak: item.address?.road || '',
         bina:  item.address?.house_number || '',
@@ -867,8 +877,8 @@ function renderSokakResults(data) {
     }
     const div = document.createElement('div');
     div.className = 'picker-row';
-    div.style.cssText = 'flex-direction:column;align-items:flex-start;height:auto;min-height:56px;padding:10px 16px;gap:2px';
-    div.innerHTML = `<span style="font-weight:600;font-size:14px">${main}</span><span style="font-size:12px;color:#8D93A0">${sub}</span>`;
+    div.style.cssText = '';
+    div.innerHTML = `<span style="font-size:16px;color:#374151;line-height:24px;word-break:break-word">${main}</span>`;
     if (item._autofill) div.dataset.autofill = JSON.stringify(item._autofill);
     div.dataset.name = item._main || main;
     if (item.lat) div.dataset.lat = item.lat;
