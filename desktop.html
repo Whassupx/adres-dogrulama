@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;900&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
+body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh;overflow-x:hidden}
 
 /* ── Arka plan (statik sayfa) ── */
 .bg{min-height:100vh;position:relative}
@@ -16,7 +16,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
 .bg-header{background:#fff;border-bottom:1px solid #e5e7eb;height:68px;display:flex;align-items:center;padding:0 32px;gap:20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .bg-logo{font-size:24px;font-weight:900;color:#0039A6;letter-spacing:-1px}
 .bg-search{flex:1;max-width:600px;height:42px;border:1.5px solid #0039A6;border-radius:6px;display:flex;align-items:center;padding:0 14px;gap:10px;background:#fff}
-.bg-search-ph{color:#9CA3AF;font-size:13px}
+.bg-search-ph{color:#6B7280;font-size:13px}
 .bg-nav{background:#fff;border-bottom:1px solid #e5e7eb;height:44px;display:flex;align-items:center;padding:0 32px;gap:28px}
 .bg-nav a{font-size:13px;color:#374151;text-decoration:none;white-space:nowrap}
 .bg-content{padding:32px;max-width:1200px;margin:0 auto}
@@ -27,7 +27,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
 .bg-sidebar-item{padding:10px 14px;border-radius:6px;font-size:13px;color:#374151;cursor:pointer;margin-bottom:4px}
 .bg-sidebar-item.active{background:#EEF2FF;color:#0039A6;font-weight:600}
 .bg-main{flex:1}
-.bg-add-btn{display:flex;align-items:center;gap:6px;background:none;border:1px solid #D1D5DB;border-radius:8px;padding:8px 16px;font-size:14px;font-weight:600;color:#111827;cursor:pointer;margin-bottom:20px;font-family:'Open Sans',sans-serif}
+.bg-add-btn{display:flex;align-items:center;gap:6px;background:none;border:1px solid #8D93A0;border-radius:8px;padding:8px 16px;font-size:14px;font-weight:600;color:#111827;cursor:pointer;margin-bottom:20px;font-family:'Open Sans',sans-serif}
 .bg-add-btn:hover{border-color:#0039A6;color:#0039A6}
 .bg-addr-card{border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;background:#fff;margin-bottom:12px}
 .bg-addr-title{font-weight:700;font-size:15px;color:#111827;margin-bottom:4px}
@@ -37,13 +37,15 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
 .bg-user-info{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:13px;color:#374151}
 
 /* ── Scrim ── */
+/* sem.overlay.scrim.default = #000000 @ 45% */
 #scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:none;cursor:pointer}
 #scrim.on{display:block}
 
 /* ── Drawer ── */
+/* sem.surface.default = #FFFFFF */
 #drawer{
   position:fixed;top:0;left:0;height:100vh;width:500px;
-  background:#fff;z-index:200;
+  background:#FFFFFF;z-index:200;
   transform:translateX(-100%);
   transition:transform .35s cubic-bezier(.32,.72,0,1);
   box-shadow:4px 0 32px rgba(0,0,0,.15);
@@ -53,107 +55,185 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
 #drawer.open{transform:translateX(0)}
 
 /* ── Panel header ── */
+/* height: sem.size.picker.header.height=56 | pad-x: sem.space.picker.header.pad-x=16 */
+/* border: sem.border.subtle=#CED2D4 | bg: sem.surface.default=#FFFFFF */
+/* icon rail: sem.size.picker.header.rail-width=40 */
 .panel-header{
   height:56px;padding:0 16px;
-  border-bottom:1px solid #D1D5DB;
+  border-bottom:1px solid #CED2D4;
   display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;background:#fff;
+  flex-shrink:0;background:#FFFFFF;
 }
+/* sem.text.title.value=#111827 */
 .panel-title{font-size:16px;font-weight:700;color:#111827}
+/* sem.size.action.small=40 */
 .close-btn{width:40px;height:40px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
 /* ── Panel body ── */
+/* pad: sem.space.picker.body.pad-x=16, pad-y=12 | gap: sem.space.picker.body.gap=12 */
 .panel-body{
   flex:1;min-height:0;
   overflow-y:auto;
-  padding:16px;
-  display:flex;flex-direction:column;gap:14px;
+  padding:12px 16px;
+  display:flex;flex-direction:column;gap:12px;
 }
 .panel-body::-webkit-scrollbar{width:4px}
-.panel-body::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:4px}
+/* sem.border.subtle=#CED2D4 */
+.panel-body::-webkit-scrollbar-thumb{background:#CED2D4;border-radius:4px}
 
 /* ── Panel footer ── */
+/* pad: sem.space.picker.footer.pad-x=16, pad-y=12 | border: sem.border.subtle=#CED2D4 */
 .panel-footer{
   flex-shrink:0;
-  padding:14px 16px 24px;
-  border-top:1px solid #D1D5DB;
-  background:#fff;
+  padding:12px 16px 24px;
+  border-top:1px solid #CED2D4;
+  background:#FFFFFF;
   box-shadow:0 -2px 8px rgba(0,0,0,.06);
 }
 
 /* ── Form elemanları ── */
+/* gap: sem.space.formfield.gap-label-control=6 */
 .field{display:flex;flex-direction:column;gap:6px}
+/* font: cmp.formfield.font.label.default=14 | color: sem.text.formfield.label=#111827 */
+/* gap: sem.space.formfield.gap-label-required=2 */
 .field-label{font-size:14px;font-weight:600;color:#111827;display:flex;gap:2px}
-.sel-trigger{height:44px;padding:10px 12px;border:1px solid #9CA3AF;border-radius:8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:#fff;user-select:none}
-.sel-trigger.disabled{background:#F3F4F6;border-color:#D1D5DB;cursor:not-allowed;pointer-events:none}
+/* height: cmp.fieldcontrol.height=44 | pad: cmp.fieldcontrol.space.pad-y=10, pad-x=12 */
+/* border: cmp.fieldcontrol.border.default=#8D93A0 | radius: cmp.fieldcontrol.radius=8 */
+/* bg: cmp.fieldcontrol.bg.default=#FFFFFF */
+.sel-trigger{height:44px;padding:10px 12px;border:1px solid #8D93A0;border-radius:8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:#FFFFFF;user-select:none}
+.sel-trigger:not(.disabled):hover{border-color:#0039A6}
+.sel-trigger.open{border-color:#0039A6;border-width:2px}
+/* bg: cmp.fieldcontrol.bg.disabled=#CED2D4 | border: cmp.fieldcontrol.border.disabled=#CED2D4 */
+.sel-trigger.disabled{background:#F3F4F6;border-color:#CED2D4;cursor:not-allowed;pointer-events:none}
+/* font: cmp.fieldcontrol.font.body.value=16 | color: cmp.fieldcontrol.text.value=#374151 */
 .sel-trigger .val{font-size:16px;color:#111827}
+/* placeholder: cmp.fieldcontrol.text.placeholder=#8D93A0 */
 .sel-trigger .val.ph{color:#6B7280}
-.sel-trigger.disabled .val{color:#9CA3AF}
+/* disabled text: cmp.fieldcontrol.text.disabled=#8D93A0 */
+.sel-trigger.disabled .val{color:#8D93A0}
+/* font: cmp.formfield.font.error.default=12 | color: sem.text.formfield.error=#C9251C */
 .field-error{display:none;font-size:12px;font-weight:600;color:#C9251C}
 .field-error.show{display:block}
+/* border error: cmp.fieldcontrol.border.error=#C9251C */
 .trigger-error{border-color:#C9251C !important}
 .trigger-error .val{color:#C9251C !important}
 .search-wrap{position:relative}
-.search-box{height:44px;padding:10px 12px;background:#F3F4F6;border-radius:8px;border:1px solid #D1D5DB;display:flex;align-items:center;gap:10px;transition:.15s}
-.search-box.on{background:#fff;border-color:#9CA3AF}
-.search-box.on:focus-within{border-color:#0039A6}
+/* bg disabled: cmp.fieldcontrol.bg.disabled=#CED2D4 | radius: cmp.fieldcontrol.radius=8 */
+/* border disabled: cmp.fieldcontrol.border.disabled=#CED2D4 | gap: cmp.fieldcontrol.space.gap=12 */
+.search-box{height:44px;padding:10px 12px;background:#F3F4F6;border-radius:8px;border:1px solid #CED2D4;display:flex;align-items:center;gap:12px;transition:.15s}
+/* bg active: cmp.fieldcontrol.bg.default=#FFFFFF | border: cmp.fieldcontrol.border.default=#8D93A0 */
+.search-box.on{background:#FFFFFF;border-color:#8D93A0}
+/* border focused: cmp.fieldcontrol.border.focused=#0039A6 */
+.search-box.on:focus-within{border-color:#0039A6;border-width:2px}
+/* font: cmp.fieldcontrol.font.body.value=16 | color: cmp.fieldcontrol.text.value=#374151 */
 .search-box input{border:none;outline:none;background:transparent;font-size:16px;font-family:'Open Sans',sans-serif;color:#111827;width:100%}
+/* placeholder: cmp.fieldcontrol.text.placeholder=#8D93A0 */
 .search-box input::placeholder{color:#6B7280}
-.search-box input:disabled{color:#9CA3AF}
-.search-box input:disabled::placeholder{color:#9CA3AF}
-.sugg-list{position:absolute;top:48px;left:0;right:0;z-index:300;background:#fff;border-radius:8px;border:1px solid #D1D5DB;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:220px;overflow-y:auto;display:none}
+/* disabled: cmp.fieldcontrol.text.disabled=#8D93A0 */
+.search-box input:disabled{color:#8D93A0}
+.search-box input:disabled::placeholder{color:#8D93A0}
+/* bg: sem.surface.default=#FFFFFF | border: sem.border.subtle=#CED2D4 | radius: sem.radius.surface=12 */
+.sugg-list{position:absolute;top:48px;left:0;right:0;z-index:300;background:#FFFFFF;border-radius:8px;border:1px solid #8D93A0;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:220px;overflow-y:auto;display:none}
 .sugg-list.open{display:block}
-.sugg-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid #F3F4F6}
+/* divider: sem.border.subtle=#CED2D4 (picker optionRow divider token) */
+.sugg-item{padding:12px 16px;cursor:pointer;border-bottom:1px solid #CED2D4}
 .sugg-item:last-child{border-bottom:none}
-.sugg-item:hover{background:#F9FAFB}
+/* hover: cmp.picker.optionRow.surface.pressed=#CED2D4 */
+.sugg-item:hover{background:#F3F4F6}
+/* font: sem.type.label.size=14 | color: sem.text.primary=#111827 */
 .sugg-item .main{font-size:14px;font-weight:600;color:#111827}
-.sugg-item .sub{font-size:12px;color:#6B7280;margin-top:2px}
+/* font: sem.type.helper.size=12 | color: sem.text.secondary=#8D93A0 */
+.sugg-item .sub{font-size:12px;color:#6B7280;margin-top:4px}
+/* helper: cmp.helperText.size.small.font=12 | color: cmp.helperText.color.default=#8D93A0 */
+/* lineHeight: cmp.helperText.size.small.lineHeight=16 */
 .helper{font-size:12px;color:#6B7280;line-height:16px}
-.devam-btn{width:100%;height:48px;border-radius:8px;border:none;background:#F3F4F6;color:#9CA3AF;font-size:16px;font-weight:600;font-family:'Open Sans',sans-serif;cursor:not-allowed;transition:.2s}
-.devam-btn.on{background:#0039A6;color:#fff;cursor:pointer}
+/* height: cmp.button.size.large.height=48 | radius: cmp.button.size.large.radius=8 */
+/* bg disabled: cmp.button.primary.bg.disabled=#F3F4F6 | text disabled: cmp.button.primary.text.disable=#8D93A0 */
+/* font: cmp.button.size.large.font=16 */
+.devam-btn{width:100%;height:48px;border-radius:8px;border:none;background:#F3F4F6;color:#8D93A0;font-size:16px;font-weight:600;font-family:'Open Sans',sans-serif;cursor:not-allowed;transition:.2s}
+/* bg: cmp.button.primary.bg.default=#0039A6 | text: cmp.button.primary.text.default=#FFFFFF */
+.devam-btn.on{background:#0039A6;color:#FFFFFF;cursor:pointer}
+/* hover: cmp.button.primary.bg.hover=#003497 */
 .devam-btn.on:hover{background:#003497}
 
 /* ── Picker ── */
+/* bg: sem.surface.picker.default=#FFFFFF */
 .picker{
   position:absolute;inset:0;z-index:50;
-  background:#fff;
+  background:#FFFFFF;
   display:flex;flex-direction:column;
   opacity:0;visibility:hidden;
   transition:opacity .2s,visibility .2s;
   overflow:hidden;
 }
 .picker.open{opacity:1;visibility:visible}
-.picker-header{height:56px;padding:0 16px;border-bottom:1px solid #D1D5DB;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fff}
+/* height: sem.size.picker.header.height=56 | pad-x: sem.space.picker.header.pad-x=16 */
+/* border: cmp.picker.header.divider-color=#CED2D4 | bg: sem.surface.picker.default=#FFFFFF */
+.picker-header{height:56px;padding:0 16px;border-bottom:1px solid #CED2D4;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#FFFFFF}
+/* rail: sem.size.picker.header.rail-width=40 */
 .picker-back{width:40px;height:56px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer}
+/* color: cmp.picker.header.text.title=#111827 */
 .picker-title{flex:1;text-align:center;font-size:16px;font-weight:700;color:#111827;font-family:'Open Sans',sans-serif}
+/* rail: sem.size.picker.header.rail-width=40 */
 .picker-close{width:40px;height:56px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer}
+/* pad: sem.space.picker.body.pad-x=16, pad-y=12 */
 .picker-search{padding:12px 16px 0;flex-shrink:0}
-.picker-search-box{height:44px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #9CA3AF;display:flex;align-items:center;gap:12px}
-.picker-search-box:focus-within{border-color:#0039A6}
-.picker-search-box input{border:none;outline:none;background:transparent;font-size:16px;font-family:'Open Sans',sans-serif;color:#374151;width:100%}
+/* height: cmp.fieldcontrol.height=44 | pad: cmp.fieldcontrol.space.pad-y=10, pad-x=12 */
+/* bg: cmp.fieldcontrol.bg.default=#FFFFFF | radius: cmp.fieldcontrol.radius=8 */
+/* border: cmp.fieldcontrol.border.default=#8D93A0 | gap: cmp.fieldcontrol.space.gap=12 */
+.picker-search-box{height:44px;padding:10px 12px;background:#FFFFFF;border-radius:8px;border:1px solid #8D93A0;display:flex;align-items:center;gap:12px}
+/* focused: cmp.fieldcontrol.border.focused=#0039A6 */
+.picker-search-box:focus-within{border-color:#0039A6;border-width:2px}
+/* font: cmp.fieldcontrol.font.body.value=16 | color: cmp.fieldcontrol.text.value=#374151 */
+.picker-search-box input{border:none;outline:none;background:transparent;font-size:16px;font-family:'Open Sans',sans-serif;color:#111827;width:100%}
+/* placeholder: cmp.fieldcontrol.text.placeholder=#8D93A0 */
 .picker-search-box input::placeholder{color:#6B7280}
-.picker-list{flex:1;overflow-y:auto;padding:8px 0}
+.picker-list{flex:1;overflow-y:auto;padding:12px 0 0}
 .picker-list::-webkit-scrollbar{width:4px}
-.picker-list::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:4px}
-.picker-group-label{padding:4px 16px;font-size:14px;font-weight:700;color:#374151}
-.picker-row{min-height:48px;padding:12px 16px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;cursor:pointer;font-size:16px;color:#374151;font-family:'Open Sans',sans-serif}
-.picker-row:hover{background:#F9FAFB}
+/* sem.border.subtle=#CED2D4 */
+.picker-list::-webkit-scrollbar-thumb{background:#CED2D4;border-radius:4px}
+/* min-height: cmp.picker.optionRow.small.min-height=56 */
+/* pad: cmp.picker.optionRow.small.pad-y=12, pad-x=16 */
+/* divider: cmp.picker.optionRow.divider.color=#CED2D4 */
+/* color: cmp.picker.optionRow.text.body=#374151 | font: sem.type.body.size=16 */
+.picker-row{min-height:56px;padding:12px 16px;border-bottom:none;display:flex;align-items:center;cursor:pointer;font-size:16px;color:#374151;font-family:'Open Sans',sans-serif;position:relative}
+.picker-row::after{content:'';position:absolute;bottom:0;left:16px;right:16px;height:1px;background:#CED2D4}
+/* hover/pressed: cmp.picker.optionRow.surface.pressed=#CED2D4 */
+.picker-row:hover{background:#F3F4F6}
+/* active: sem.surface.action.primary.default=#0039A6 tint */
 .picker-row.active{color:#0039A6;font-weight:600;background:#F0F5FF}
+/* gap: sem.space.breadcrumb.gap-text-chevron=4 | pad-x: sem.space.picker.body.pad-x=16 */
 .picker-breadcrumb{display:flex;align-items:center;gap:4px;padding:10px 16px 0;flex-shrink:0}
-.bc-prev{font-size:16px;font-weight:700;color:#9CA3AF;cursor:pointer;background:none;border:none;padding:0;font-family:'Open Sans',sans-serif}
-.bc-sep{color:#9CA3AF;font-size:14px}
-.bc-cur{font-size:16px;font-weight:700;color:#374151;font-family:'Open Sans',sans-serif}
+/* color: cmp.pickerBreadcrumb.text.default=#8D93A0 */
+.bc-prev{font-size:16px;font-weight:700;color:#6B7280;cursor:pointer;background:none;border:none;padding:0;font-family:'Open Sans',sans-serif}
+/* sep: cmp.pickerBreadcrumb.icon.default=#8D93A0 */
+.bc-sep{color:#6B7280;font-size:14px}
+/* current: cmp.pickerBreadcrumb.text.current=#374151 */
+.bc-cur{font-size:16px;font-weight:700;color:#111827;font-family:'Open Sans',sans-serif}
 
 /* ── Teslimat formu ── */
-.t-input{width:100%;height:44px;padding:10px 12px;border:1px solid #9CA3AF;border-radius:8px;font-size:16px;font-family:'Open Sans',sans-serif;color:#374151;outline:none;transition:border-color .15s;background:#fff}
-.t-input:focus{border-color:#0039A6}
+/* height: cmp.fieldcontrol.height=44 | pad: cmp.fieldcontrol.space.pad-y=10, pad-x=12 */
+/* border: cmp.fieldcontrol.border.default=#8D93A0 | radius: cmp.fieldcontrol.radius=8 */
+/* font: cmp.fieldcontrol.font.body.value=16 | color: cmp.fieldcontrol.text.value=#374151 */
+/* bg: cmp.fieldcontrol.bg.default=#FFFFFF */
+.t-input{width:100%;height:44px;padding:10px 12px;border:1px solid #8D93A0;border-radius:8px;font-size:16px;font-family:'Open Sans',sans-serif;color:#111827;outline:none;transition:border-color .15s;background:#FFFFFF}
+/* focused: cmp.fieldcontrol.border.focused=#0039A6 */
+.t-input:hover:not(:disabled){border-color:#0039A6}
+.t-input:focus{border-color:#0039A6;border-width:2px}
+/* placeholder: cmp.fieldcontrol.text.placeholder=#8D93A0 */
 .t-input::placeholder{color:#6B7280}
-.t-input:disabled,.t-input[readonly]{background:#F3F4F6;border-color:#D1D5DB;color:#6B7280;cursor:default}
-#t-sokak{color:#374151;background:transparent;}
+.t-input.placeholder{color:#6B7280}
+select.t-input:invalid,select.t-input.ph{color:#6B7280}
+/* disabled bg: cmp.fieldcontrol.bg.disabled=#CED2D4 | border: cmp.fieldcontrol.border.disabled=#CED2D4 */
+/* disabled text: cmp.fieldcontrol.text.disabled=#8D93A0 */
+.t-input:disabled,.t-input[readonly]{background:#F3F4F6;border-color:#CED2D4;color:#8D93A0;cursor:default}
+#t-sokak{color:#111827;background:transparent;}
+/* gap: sem.space.control.gap=12 */
 .row2{display:flex;gap:12px}
 .row2 .field{flex:1}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spinner{width:16px;height:16px;border:2px solid #D1D5DB;border-top-color:#0039A6;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:none}
+/* border: sem.border.subtle=#CED2D4 | accent: sem.surface.action.primary.default=#0039A6 */
+.spinner{width:16px;height:16px;border:2px solid #CED2D4;border-top-color:#0039A6;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:none}
 
 /* ── Harita Paneli ── */
 #map-panel {
@@ -272,7 +352,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
       <div class="field-label" id="lbl-ilce">İlçe <span>*</span></div>
       <div class="sel-trigger disabled" id="trigger-ilce" onclick="openPicker('ilce')">
         <span class="val ph" id="val-ilce">Seç</span>
-        <svg width="14" height="9" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg width="14" height="9" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#8D93A0" stroke-width="2" stroke-linecap="round"/></svg>
       </div>
       <span class="field-error" id="err-ilce">*Zorunlu alan</span>
     </div>
@@ -280,7 +360,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
       <div class="field-label" id="lbl-mah">Mahalle <span>*</span></div>
       <div class="sel-trigger disabled" id="trigger-mah" onclick="openPicker('mah')">
         <span class="val ph" id="val-mah">Seç</span>
-        <svg width="14" height="9" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg width="14" height="9" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#8D93A0" stroke-width="2" stroke-linecap="round"/></svg>
       </div>
       <span class="field-error" id="err-mah">*Zorunlu alan</span>
     </div>
@@ -288,7 +368,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
       <div class="field-label" id="lbl-sokak">Sokak/Bina/Firma <span>*</span></div>
       <div class="search-wrap">
         <div class="search-box" id="search-box" onclick="onSokakBoxClick()">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#9CA3AF" stroke-width="1.8" id="sic1"/><path d="M13.5 13.5L17 17" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" id="sic2"/></svg>
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#8D93A0" stroke-width="1.8" id="sic1"/><path d="M13.5 13.5L17 17" stroke="#8D93A0" stroke-width="1.8" stroke-linecap="round" id="sic2"/></svg>
           <input id="sokak-input" placeholder="Ara" disabled autocomplete="off" oninput="onSokakInput(this)"/>
           <div class="spinner" id="spinner"></div>
         </div>
@@ -305,7 +385,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
   <!-- Picker: İl -->
   <div class="picker" id="picker-il">
     <div class="picker-header">
-      <button class="picker-back" onclick="closePicker('il')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="picker-back" onclick="closePicker('il')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#8D93A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <span class="picker-title">İl Seçin</span>
       <button class="picker-close" onclick="closeAllPickers()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
@@ -321,7 +401,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
   <!-- Picker: İlçe -->
   <div class="picker" id="picker-ilce">
     <div class="picker-header">
-      <button class="picker-back" onclick="closePicker('ilce');openPicker('il')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="picker-back" onclick="closePicker('ilce');openPicker('il')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#8D93A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <span class="picker-title">İlçe Seçin</span>
       <button class="picker-close" onclick="closeAllPickers()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
@@ -341,7 +421,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
   <!-- Picker: Mahalle -->
   <div class="picker" id="picker-mah">
     <div class="picker-header">
-      <button class="picker-back" onclick="closePicker('mah');openPicker('ilce')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="picker-back" onclick="closePicker('mah');openPicker('ilce')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#8D93A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <span class="picker-title">Mahalle Seçin</span>
       <button class="picker-close" onclick="closeAllPickers()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
@@ -361,7 +441,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
   <!-- Picker: Sokak arama -->
   <div class="picker" id="picker-sokak">
     <div class="picker-header">
-      <button class="picker-back" onclick="closePicker('sokak');openPicker('mah')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="picker-back" onclick="closePicker('sokak');openPicker('mah')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#8D93A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <span class="picker-title">Sokak / Bina / Firma</span>
       <button class="picker-close" onclick="closeAllPickers()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
@@ -386,29 +466,29 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
   <!-- Picker: Teslimat -->
   <div class="picker" id="picker-teslimat">
     <div class="picker-header">
-      <button class="picker-back" onclick="closePicker('teslimat')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="picker-back" onclick="closePicker('teslimat')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#8D93A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <span class="picker-title">Teslimat Adresi Bilgileri</span>
       <button class="picker-close" onclick="closeDrawer()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
     <div class="panel-body" id="teslimat-body">
       <div class="field">
         <div class="field-label">İl</div>
-        <div style="height:44px;padding:10px 12px;background:#F3F4F6;border:1px solid #D1D5DB;border-radius:8px;display:flex;align-items:center;justify-content:space-between;">
-          <span id="t-il" style="font-size:16px;color:#374151"></span>
-          <svg width="14" height="16" viewBox="0 0 14 16" fill="none"><rect x="1" y="7" width="12" height="8" rx="2" stroke="#9CA3AF" stroke-width="1.5"/><path d="M4 7V5a3 3 0 0 1 6 0v2" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div style="height:44px;padding:10px 12px;background:#F3F4F6;border:1px solid #8D93A0;border-radius:8px;display:flex;align-items:center;justify-content:space-between;">
+          <span id="t-il" style="font-size:16px;color:#111827"></span>
+          <svg width="14" height="16" viewBox="0 0 14 16" fill="none"><rect x="1" y="7" width="12" height="8" rx="2" stroke="#8D93A0" stroke-width="1.5"/><path d="M4 7V5a3 3 0 0 1 6 0v2" stroke="#8D93A0" stroke-width="1.5" stroke-linecap="round"/></svg>
         </div>
       </div>
       <div class="field">
         <div class="field-label">İlçe</div>
         <div class="sel-trigger" id="t-ilce-trigger" onclick="closePicker('teslimat');openPicker('ilce')">
-          <span id="t-ilce-val" style="font-size:16px;color:#374151"></span>
+          <span id="t-ilce-val" style="font-size:16px;color:#111827"></span>
           <svg width="14" height="9" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#374151" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
       </div>
       <div class="field">
         <div class="field-label">Mahalle</div>
         <div class="sel-trigger" id="t-mah-trigger" onclick="closePicker('teslimat');openPicker('mah')">
-          <span id="t-mah-val" style="font-size:16px;color:#374151"></span>
+          <span id="t-mah-val" style="font-size:16px;color:#111827"></span>
           <svg width="14" height="9" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#374151" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
       </div>
@@ -421,34 +501,28 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
         </div>
         <span class="field-error" id="terr-sokak">*Zorunlu alan</span>
       </div>
-      <div class="field">
-        <div class="field-label" id="tlbl-tarif">Adres Tarifi <span>*</span></div>
-        <textarea class="t-input" id="t-tarif" placeholder="Kısa tarif yazın" rows="1"
-          style="resize:none;overflow:hidden;height:44px;max-height:120px;line-height:24px"
-          oninput="growTarif(this);checkTeslimat()"></textarea>
-        <span class="field-error" id="terr-tarif">*Zorunlu alan</span>
-      </div>
       <div class="row2">
         <div class="field">
           <div class="field-label" id="tlbl-bina">Bina No <span>*</span></div>
+
           <input class="t-input" id="t-bina" placeholder="Bina No" oninput="checkTeslimat()"/>
           <span class="field-error" id="terr-bina">*Zorunlu alan</span>
         </div>
         <div class="field">
-          <div class="field-label" id="tlbl-daire">Daire No <span>*</span></div>
-          <input class="t-input" id="t-daire" placeholder="Daire No" oninput="checkTeslimat()"/>
+          <div class="field-label" id="tlbl-daire">Kat <span>*</span></div>
+          <input class="t-input" id="t-daire" placeholder="Kat" oninput="checkTeslimat()"/>
           <span class="field-error" id="terr-daire">*Zorunlu alan</span>
         </div>
       </div>
       <div class="row2">
         <div class="field">
-          <div class="field-label" id="tlbl-kat">Kat <span>*</span></div>
-          <input class="t-input" id="t-kat" placeholder="Kat" oninput="checkTeslimat()"/>
+          <div class="field-label" id="tlbl-kat">Daire No <span>*</span></div>
+          <input class="t-input" id="t-kat" placeholder="Daire No" oninput="checkTeslimat()"/>
           <span class="field-error" id="terr-kat">*Zorunlu alan</span>
         </div>
         <div class="field">
           <div class="field-label" id="tlbl-asansor">Asansör <span>*</span></div>
-          <select class="t-input" id="t-asansor" onchange="checkTeslimat()"
+          <select class="t-input" id="t-asansor" onchange="checkTeslimat()" required
             style="appearance:none;cursor:pointer;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2210%22 viewBox=%220 0 16 10%22><path d=%22M1 1L8 8L15 1%22 stroke=%22%23374151%22 stroke-width=%222%22 stroke-linecap=%22round%22/></svg>');background-repeat:no-repeat;background-position:right 12px center;padding-right:36px">
             <option value="" disabled selected>Seç</option>
             <option value="Var">Var</option>
@@ -458,14 +532,22 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
         </div>
       </div>
       <div class="field">
+        <div class="field-label" id="tlbl-tarif">Adres Tarifi <span>*</span></div>
+        <textarea class="t-input" id="t-tarif" placeholder="Kısa bir adres tarifi yazın" rows="1" maxlength="100"
+          style="resize:none;overflow:hidden;height:44px;max-height:120px;line-height:24px"
+          oninput="growTarif(this);checkTeslimat()"></textarea>
+        <span class="field-error" id="terr-tarif">*Zorunlu alan</span>
+      </div>
+      <div class="field">
         <div class="field-label" id="tlbl-baslik">Adres Başlığı <span>*</span></div>
-        <input class="t-input" id="t-baslik" placeholder="Adrese bir isim verin" oninput="checkTeslimat()"/>
+        <input class="t-input" id="t-baslik" placeholder="Adrese bir isim verin" maxlength="40" oninput="checkTeslimat()"/>
         <span class="field-error" id="terr-baslik">*Zorunlu alan</span>
       </div>
       <div class="helper">*Alanların doldurulması zorunludur.</div>
       <div style="display:flex;align-items:flex-start;gap:8px">
-        <input type="checkbox" id="t-fatura" checked style="width:16px;height:16px;margin-top:2px;accent-color:#111827;flex-shrink:0"/>
-        <label for="t-fatura" style="font-size:12px;color:#1F1A18;line-height:18px;cursor:pointer">Teslimat adresim, fatura adresim olarak kullanılabilir.</label>
+        <!-- accent: sem.surface.action.primary.default=#0039A6 | label: sem.text.body=#374151 -->
+        <input type="checkbox" id="t-fatura" checked style="width:16px;height:16px;margin-top:2px;accent-color:#0039A6;flex-shrink:0"/>
+        <label for="t-fatura" style="font-size:14px;line-height:20px;color:#111827;cursor:pointer">Teslimat adresim, fatura adresim olarak kullanılabilir.</label>
       </div>
     </div>
     <div class="panel-footer">
@@ -476,13 +558,15 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;min-height:100vh}
   <!-- Picker: Onayla -->
   <div class="picker" id="picker-onayla">
     <div class="picker-header">
-      <button class="picker-back" onclick="closePicker('onayla');openPicker('teslimat')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="picker-back" onclick="closePicker('onayla');openPicker('teslimat')"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#8D93A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <span class="picker-title">Adresi Onayla</span>
       <button class="picker-close" onclick="closeDrawer()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
     <div class="panel-body">
       <div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:4px">Adres Bilgileri</div>
-      <div style="background:#F3F4F6;border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+      <!-- infoGroup: bg=sem.surface.infoGroup.container=#CED2D4, radius=8, pad-x=16, pad-y=12, gap=8 -->
+      <div style="background:#F3F4F6;border-radius:8px;padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+        <!-- label: sem.text.infoGroup.label=#111827 | value: sem.text.infoGroup.value=#374151 -->
         <div><span style="font-size:14px;font-weight:700;color:#111827">Adres:</span><br><span id="o-adres" style="font-size:14px;color:#374151;line-height:20px"></span></div>
         <div><span style="font-size:14px;font-weight:700;color:#111827">Adres Tarifi:</span><br><span id="o-tarif" style="font-size:14px;color:#374151"></span></div>
         <div><span style="font-size:14px;font-weight:700;color:#111827">Asansör:</span> <span id="o-asansor" style="font-size:14px;color:#374151"></span></div>
@@ -584,8 +668,8 @@ function renderAddr() {
         <div class="bg-addr-detail">${a.detail}</div>
       </div>
       <div class="bg-addr-actions">
-        <button title="Düzenle"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M14.5 2.5L17.5 5.5L6.5 16.5H3.5V13.5L14.5 2.5Z" stroke="#6B7280" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
-        <button title="Sil" onclick="delAddr(${i})"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 7h10l-1 10H6L5 7Z" stroke="#6B7280" stroke-width="1.5" stroke-linejoin="round"/><path d="M3 7h14M8 7V5h4v2" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+        <button title="Düzenle"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M14.5 2.5L17.5 5.5L6.5 16.5H3.5V13.5L14.5 2.5Z" stroke="#8D93A0" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+        <button title="Sil" onclick="delAddr(${i})"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 7h10l-1 10H6L5 7Z" stroke="#8D93A0" stroke-width="1.5" stroke-linejoin="round"/><path d="M3 7h14M8 7V5h4v2" stroke="#8D93A0" stroke-width="1.5" stroke-linecap="round"/></svg></button>
       </div>
     </div>`).join('');
 }
@@ -630,15 +714,7 @@ function renderPickerIl(filter) {
   const all = Object.keys(ADRES).sort((a,b)=>a.localeCompare(b,'tr'));
   const filtered = filter ? all.filter(v=>v.toLowerCase().includes(filter.toLowerCase())) : all;
   let html = '';
-  if (!filter) {
-    html += '<div class="picker-group-label">En Çok Seçilenler</div>';
-    POPULAR.forEach(v => html += `<div class="picker-row${v===st.il?' active':''}" onclick="selIl('${v}')">${v}</div>`);
-    html += '<div class="picker-group-label">Tümü</div>';
-  }
-  let lastL='';
   filtered.forEach(v => {
-    const l=v[0].toUpperCase();
-    if(l!==lastL){html+=`<div class="picker-group-label">${l}</div>`;lastL=l;}
     html+=`<div class="picker-row${v===st.il?' active':''}" onclick="selIl('${v}')">${v}</div>`;
   });
   document.getElementById('picker-il-list').innerHTML = html;
@@ -646,10 +722,8 @@ function renderPickerIl(filter) {
 function renderPickerIlce(filter) {
   const all = Object.keys(ADRES[st.il]||{}).sort((a,b)=>a.localeCompare(b,'tr'));
   const filtered = filter ? all.filter(v=>v.toLowerCase().includes(filter.toLowerCase())) : all;
-  let html='', lastL='';
+  let html='';
   filtered.forEach(v => {
-    const l=v[0].toUpperCase();
-    if(l!==lastL){html+=`<div class="picker-group-label">${l}</div>`;lastL=l;}
     html+=`<div class="picker-row${v===st.ilce?' active':''}" onclick="selIlce('${v}')">${v}</div>`;
   });
   document.getElementById('picker-ilce-list').innerHTML = html;
@@ -657,10 +731,8 @@ function renderPickerIlce(filter) {
 function renderPickerMah(filter) {
   const all = (ADRES[st.il]?.[st.ilce]||['Merkez Mah.','Yeni Mah.','Cumhuriyet Mah.']).sort((a,b)=>a.localeCompare(b,'tr'));
   const filtered = filter ? all.filter(v=>v.toLowerCase().includes(filter.toLowerCase())) : all;
-  let html='', lastL='';
+  let html='';
   filtered.forEach(v => {
-    const l=v[0].toUpperCase();
-    if(l!==lastL){html+=`<div class="picker-group-label">${l}</div>`;lastL=l;}
     html+=`<div class="picker-row${v===st.mah?' active':''}" onclick="selMah('${v}')">${v}</div>`;
   });
   document.getElementById('picker-mah-list').innerHTML = html;
@@ -726,16 +798,16 @@ function enableSokak() {
   const inp = document.getElementById('sokak-input');
   inp.disabled=false; inp.placeholder='Sokak, bina veya firma ara...';
   document.getElementById('search-box').classList.add('on');
-  document.getElementById('sic1').setAttribute('stroke','#6B7280');
-  document.getElementById('sic2').setAttribute('stroke','#6B7280');
+  document.getElementById('sic1').setAttribute('stroke','#8D93A0');
+  document.getElementById('sic2').setAttribute('stroke','#8D93A0');
 }
 function disableSokak() {
   const inp = document.getElementById('sokak-input');
   inp.disabled=true; inp.value=''; st.sokak='';
   document.getElementById('search-box').classList.remove('on');
   document.getElementById('sugg-list').classList.remove('open');
-  document.getElementById('sic1').setAttribute('stroke','#9CA3AF');
-  document.getElementById('sic2').setAttribute('stroke','#9CA3AF');
+  document.getElementById('sic1').setAttribute('stroke','#8D93A0');
+  document.getElementById('sic2').setAttribute('stroke','#8D93A0');
 }
 
 // ── Sokak picker arama (Nominatim) ─────────────────────
@@ -746,16 +818,16 @@ function onSokakPickerInput(inp) {
   const spin = document.getElementById('sokak-spinner');
   if (q.length < 3) { list.innerHTML=''; spin.style.display='none'; return; }
   spin.style.display='block';
-  list.innerHTML = '<div style="padding:14px 16px;color:#6B7280;font-size:14px">Aranıyor…</div>';
+  list.innerHTML = '<div style="padding:14px 16px;color:#8D93A0;font-size:14px">Aranıyor…</div>';
   sokakPickerTimer = setTimeout(async () => {
     try {
       const mah = st.mah.replace(/\s*mah\.?/gi,'').trim();
-      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+mah+', '+st.ilce+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr`;
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+mah+', '+st.ilce+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr&addressdetails=1&namedetails=1`;
       const r = await fetch(url);
       let data = await r.json();
       spin.style.display='none';
       if (!data.length) {
-        const r2 = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr`);
+        const r2 = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr&addressdetails=1&namedetails=1`);
         data = await r2.json();
       }
       // Hardcoded Avansas
@@ -777,15 +849,26 @@ function onSokakPickerInput(inp) {
 
 function renderSokakResults(data) {
   const list = document.getElementById('picker-sokak-list');
-  if (!data.length) { list.innerHTML='<div style="padding:14px 16px;color:#6B7280;font-size:14px">Sonuç bulunamadı</div>'; return; }
+  if (!data.length) { list.innerHTML='<div style="padding:14px 16px;color:#8D93A0;font-size:14px">Sonuç bulunamadı</div>'; return; }
   list.innerHTML = '';
   data.forEach(item => {
     const main = item._main || item.display_name.split(', ').slice(0,2).join(', ');
     const sub  = item._sub  || item.display_name.split(', ').slice(2,5).join(', ');
+    // POI name: namedetails.name > name > boş
+    if (!item._autofill) {
+      const poiName = (item.namedetails && item.namedetails.name) || item.name || '';
+      item._autofill = {
+        sokak: item.address?.road || '',
+        bina:  item.address?.house_number || '',
+        daire: '',
+        kat:   '',
+        tarif: poiName
+      };
+    }
     const div = document.createElement('div');
     div.className = 'picker-row';
     div.style.cssText = 'flex-direction:column;align-items:flex-start;height:auto;min-height:56px;padding:10px 16px;gap:2px';
-    div.innerHTML = `<span style="font-weight:600;font-size:14px">${main}</span><span style="font-size:12px;color:#6B7280">${sub}</span>`;
+    div.innerHTML = `<span style="font-weight:600;font-size:14px">${main}</span><span style="font-size:12px;color:#8D93A0">${sub}</span>`;
     if (item._autofill) div.dataset.autofill = JSON.stringify(item._autofill);
     div.dataset.name = item._main || main;
     if (item.lat) div.dataset.lat = item.lat;
@@ -803,8 +886,8 @@ function onSokakPickerSelect(div, item) {
   document.getElementById('t-sokak').value = label;
   if (af) {
     if (af.bina)  document.getElementById('t-bina').value  = af.bina;
-    if (af.daire) document.getElementById('t-daire').value = af.daire;
-    if (af.kat)   document.getElementById('t-kat').value   = af.kat;
+    if (af.daire) document.getElementById('t-kat').value   = af.daire;
+    if (af.kat)   document.getElementById('t-daire').value = af.kat;
     if (af.tarif) { document.getElementById('t-tarif').value = af.tarif; growTarif(document.getElementById('t-tarif')); }
   }
   if (div.dataset.lat && div.dataset.lon) {
@@ -823,8 +906,10 @@ function checkForm() {
     const hasVal = !!st[k];
     const errEl = document.getElementById('err-'+k);
     const trigEl = document.getElementById(k==='sokak'?'search-box':'trigger-'+k);
+    const lblEl = document.getElementById('lbl-'+k);
     if (hasVal && errEl) errEl.classList.remove('show');
     if (hasVal && trigEl) trigEl.classList.remove('trigger-error');
+    if (hasVal && lblEl) lblEl.style.color='';
   });
 }
 
@@ -857,8 +942,8 @@ function openTeslimat() {
   const af = st._autofill;
   document.getElementById('t-sokak').value = af ? af.sokak : st.sokak;
   document.getElementById('t-bina').value   = af ? af.bina  : '';
-  document.getElementById('t-daire').value  = af ? af.daire : '';
-  document.getElementById('t-kat').value    = af ? af.kat   : '';
+  document.getElementById('t-daire').value  = af ? af.kat   : '';
+  document.getElementById('t-kat').value    = af ? af.daire : '';
   document.getElementById('t-tarif').value  = af ? af.tarif : '';
   document.getElementById('t-baslik').value = '';
   document.getElementById('t-asansor').value = '';
@@ -875,10 +960,12 @@ function checkTeslimat() {
   ['sokak','tarif','bina','daire','kat','baslik'].forEach(id=>{
     const el=document.getElementById('t-'+id);
     const err=document.getElementById('terr-'+id);
-    if(el&&el.value.trim()&&err){ err.classList.remove('show'); el.style.outline=''; }
+    const lbl=document.getElementById('tlbl-'+id);
+    if(el&&el.value.trim()&&err){ err.classList.remove('show'); el.style.outline=''; if(lbl) lbl.style.color=''; }
   });
   const a=document.getElementById('t-asansor');
-  if(a&&a.value){ document.getElementById('terr-asansor').classList.remove('show'); a.style.outline=''; }
+  const albl=document.getElementById('tlbl-asansor');
+  if(a&&a.value){ document.getElementById('terr-asansor').classList.remove('show'); a.style.outline=''; if(albl) albl.style.color=''; }
 }
 function teslimatDevam() {
   let valid=true;
