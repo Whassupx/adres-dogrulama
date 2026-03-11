@@ -661,15 +661,23 @@ function buildAutofill(item) {
 function renderSokakResults(list, data) {
   list.innerHTML = data.map(item => {
     const poiName = (item.namedetails && item.namedetails.name) ? item.namedetails.name : (item.name || null);
-    const main = item._main || item.display_name.split(', ').slice(0,2).join(', ');
+    const addr = item.address || {};
+    const parts = [
+      poiName || addr.amenity || addr.building || '',
+      addr.road || addr.pedestrian || addr.footway || '',
+      addr.house_number ? 'No:' + addr.house_number : '',
+      addr.suburb || addr.neighbourhood || addr.quarter || '',
+      addr.district || addr.town || addr.city_district || '',
+      addr.city || addr.province || ''
+    ].filter(Boolean);
+    const main = item._main || (parts.length ? parts.join(', ') : item.display_name.split(', ').slice(0,4).join(', '));
     const sub  = item._sub  || item.display_name.split(', ').slice(2,5).join(', ');
     const afObj = buildAutofill(item);
     const af = ` data-autofill='${JSON.stringify(afObj)}'`;
     const dl = item._label ? ` data-label="${item._label}"` : '';
     const poiAttr = poiName ? ` data-poi="${poiName.replace(/"/g,'&quot;')}"` : '';
-    return `<div class="picker-row" style="flex-direction:column;align-items:flex-start;height:auto;min-height:56px;padding:10px 16px;gap:2px" data-name="${main}" data-lat="${item.lat}" data-lon="${item.lon}"${af}${dl}${poiAttr}>
-      <span style="font-weight:600;font-size:15px">${main}</span>
-      <span style="font-size:12px;color:#6B7280">${sub}</span>
+    return `<div class="picker-row" data-name="${main}" data-lat="${item.lat}" data-lon="${item.lon}"${af}${dl}${poiAttr}>
+      <span style="font-size:16px;color:#374151;line-height:24px;word-break:break-word">${main}</span>
     </div>`;
   }).join('') || '<div style="padding:16px;color:#6B7280;font-size:14px">Sonuç bulunamadı</div>';
 }
