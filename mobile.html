@@ -691,14 +691,14 @@ document.getElementById('picker-sokak-list').addEventListener('click', function(
   st.lon = parseFloat(row.dataset.lon);
   const autofill = row.dataset.autofill ? JSON.parse(row.dataset.autofill) : null;
   const sokakLabel = autofill ? autofill.sokak : name;
-  const displayLabel = row.dataset.label || sokakLabel;
+  const displayLabel = row.dataset.label || name;
   st.sokak = sokakLabel;
   st._autofill = autofill || null;
   document.getElementById('sokak-input').value = displayLabel;
   updatePin(st.lat, st.lon, displayLabel);
   const fromTeslimat = document.getElementById('picker-teslimat').dataset.from === 'teslimat';
   closePicker('sokak');
-  document.getElementById('t-sokak').value = sokakLabel;
+  document.getElementById('t-sokak').value = displayLabel;
   if (autofill) {
     if (autofill.bina)  document.getElementById('t-bina').value  = autofill.bina;
     if (autofill.daire) document.getElementById('t-kat').value   = autofill.daire;
