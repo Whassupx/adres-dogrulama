@@ -9,9 +9,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-content:center;padding:40px 0;min-height:100vh}
+body{overflow-x:hidden;font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-content:center;padding:40px 0;min-height:100vh}
 @media(max-width:480px){
-  body{padding:0;min-height:100%;height:100%;overflow:hidden;background:#fff}
+  body{overflow-x:hidden;padding:0;min-height:100%;height:100%;overflow:hidden;background:#fff}
   .phone{width:100vw !important;height:100svh !important;border-radius:0 !important;box-shadow:none !important}
 }
 .phone{width:402px;background:#fff;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.18);border-radius:12px}
@@ -23,7 +23,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
 .logo-text{font-size:22px;font-weight:900;color:#0039A6;letter-spacing:-1px}
 .logo-sub{font-size:10px;color:#5c6bc0}
 .header-icons{display:flex;gap:8px;align-items:center}
-.icon-btn{width:36px;height:36px;border:1.5px solid #9CA3AF;border-radius:50%;display:flex;align-items:center;justify-content:center;background:none;cursor:pointer}
+.icon-btn{width:36px;height:36px;border:1.5px solid #8D93A0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:none;cursor:pointer}
 .cart-wrap{position:relative}
 .cart-btn{border-color:#FF6F00}
 .cart-badge{position:absolute;top:-4px;right:-4px;background:#FF6F00;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700}
@@ -42,54 +42,56 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
 .overlay.active{display:block;animation:fadeIn .2s ease}
 .panel{position:absolute;left:0;right:0;bottom:-100vh;z-index:20;border-top-left-radius:12px;border-top-right-radius:12px;background:#fff;display:flex;flex-direction:column;transition:bottom .35s cubic-bezier(.32,.72,0,1);box-shadow:0 -8px 32px rgba(0,0,0,.12);height:90vh;max-height:90vh}
 .panel.open{bottom:0}
-.panel-header{height:56px;padding:0 16px;border-bottom:1px solid #D1D5DB;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.panel-header{height:56px;padding:0 16px;border-bottom:1px solid #CED2D4;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .panel-title{font-size:16px;font-weight:700;color:#111827}
 .close-btn{width:40px;height:40px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.panel-body{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:12px}
+.panel-body{overflow-x:hidden;flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:12px}
 .panel-body::-webkit-scrollbar{width:4px}
-.panel-body::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:4px}
-.panel-footer{padding:12px 16px 24px;border-top:1px solid #D1D5DB;flex-shrink:0}
+.panel-body::-webkit-scrollbar-thumb{background:#CED2D4;border-radius:4px}
+.panel-footer{padding:12px 16px 24px;border-top:1px solid #CED2D4;flex-shrink:0}
 .field{display:flex;flex-direction:column;gap:6px;width:100%}
 .field-label{display:flex;gap:2px;font-size:14px;font-weight:600;color:#111827}
-.sel-trigger{height:44px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #9CA3AF;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color .15s;user-select:none}
-.sel-trigger.disabled{background:#F3F4F6;border-color:#D1D5DB;cursor:not-allowed;pointer-events:none}
+.sel-trigger{height:44px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #8D93A0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color .15s;user-select:none}
+.sel-trigger:not(.disabled):hover{border-color:#0039A6}
+.sel-trigger.open{border-color:#0039A6;border-width:2px}
+.sel-trigger.disabled{background:#F3F4F6;border-color:#CED2D4;cursor:not-allowed;pointer-events:none}
 .sel-trigger .val{font-size:16px;color:#111827}
 .sel-trigger .val.ph{color:#6B7280}
-.sel-trigger.disabled .val{color:#9CA3AF}
+.sel-trigger.disabled .val{color:#8D93A0}
 .chevron{flex-shrink:0}
 .picker{position:absolute;left:0;right:0;top:0;bottom:0;z-index:50;background:#fff;display:flex;flex-direction:column;transition:opacity .2s,visibility .2s;opacity:0;visibility:hidden;border-top-left-radius:12px;border-top-right-radius:12px;overflow:hidden}
 .picker.open{opacity:1;visibility:visible}
-.picker-header{height:56px;padding:0 16px;border-bottom:1px solid #D1D5DB;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-top-left-radius:12px;border-top-right-radius:12px;background:#fff}
+.picker-header{height:56px;padding:0 16px;border-bottom:1px solid #CED2D4;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-top-left-radius:12px;border-top-right-radius:12px;background:#fff}
 .picker-back{width:40px;height:56px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer}
 .picker-title{flex:1;text-align:center;font-size:16px;font-weight:700;color:#111827;font-family:'Open Sans',sans-serif}
 .picker-close{width:40px;height:56px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer}
 .picker-search{padding:12px 16px 0;flex-shrink:0}
-.picker-search-box{height:44px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #9CA3AF;display:flex;align-items:center;gap:12px}
-.picker-search-box:focus-within{border-color:#0039A6}
+.picker-search-box{height:44px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #8D93A0;display:flex;align-items:center;gap:12px}
+.picker-search-box:focus-within{border-color:#0039A6;border-width:2px}
 .picker-search-box input{border:none;outline:none;background:transparent;font-size:16px;font-family:'Open Sans',sans-serif;color:#374151;width:100%}
 .picker-search-box input::placeholder{color:#6B7280}
 .picker-list{flex:1;overflow-y:auto;padding:12px 0}
 .picker-list::-webkit-scrollbar{width:4px}
-.picker-list::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:4px}
-.picker-group-label{padding:4px 16px;font-size:16px;font-weight:700;color:#374151;line-height:24px}
+.picker-list::-webkit-scrollbar-thumb{background:#CED2D4;border-radius:4px}
 .picker-breadcrumb{display:flex;align-items:center;gap:4px;padding:0 0 4px 0;flex-shrink:0}
-.picker-breadcrumb .bc-prev{font-size:16px;font-weight:700;color:#9CA3AF;line-height:24px;cursor:pointer;font-family:'Open Sans',sans-serif;background:none;border:none;padding:0}
-.picker-breadcrumb .bc-sep{width:16px;height:16px;display:flex;align-items:center;justify-content:center;color:#9CA3AF}
-.picker-breadcrumb .bc-cur{font-size:16px;font-weight:700;color:#374151;line-height:24px;font-family:'Open Sans',sans-serif}
-.picker-row{height:56px;min-height:56px;padding:12px 16px;border-bottom:1px solid #D1D5DB;display:flex;align-items:center;cursor:pointer;background:#fff;font-size:16px;color:#374151;font-family:'Open Sans',sans-serif;line-height:24px}
-.picker-row:hover{background:#F9FAFB}
+.picker-breadcrumb .bc-prev{font-size:16px;font-weight:700;color:#6B7280;line-height:24px;cursor:pointer;font-family:'Open Sans',sans-serif;background:none;border:none;padding:0}
+.picker-breadcrumb .bc-sep{width:16px;height:16px;display:flex;align-items:center;justify-content:center;color:#6B7280}
+.picker-breadcrumb .bc-cur{font-size:16px;font-weight:700;color:#111827;line-height:24px;font-family:'Open Sans',sans-serif}
+.picker-row{height:56px;min-height:56px;padding:12px 16px;border-bottom:none;display:flex;align-items:center;cursor:pointer;background:#fff;font-size:16px;color:#374151;font-family:'Open Sans',sans-serif;line-height:24px;position:relative}
+.picker-row::after{content:'';position:absolute;bottom:0;left:16px;right:16px;height:1px;background:#CED2D4}
+.picker-row:hover{background:#F3F4F6}
 .picker-row.active{color:#0039A6;font-weight:600;background:#F0F5FF}
 .search-wrap{position:relative}
-.search-box{height:44px;padding:10px 12px;background:#F3F4F6;border-radius:8px;border:1px solid #D1D5DB;display:flex;align-items:center;gap:10px;transition:.15s}
-.search-box.on{background:#fff;border-color:#9CA3AF}
-.search-box.on:focus-within{border-color:#0039A6}
+.search-box{height:44px;padding:10px 12px;background:#F3F4F6;border-radius:8px;border:1px solid #CED2D4;display:flex;align-items:center;gap:12px;transition:.15s}
+.search-box.on{background:#fff;border-color:#8D93A0}
+.search-box.on:focus-within{border-color:#0039A6;border-width:2px}
 .search-box input{border:none;outline:none;background:transparent;font-size:16px;font-family:'Open Sans',sans-serif;color:#111827;width:100%}
 .search-box input::placeholder{color:#6B7280}
-.search-box input:disabled{color:#9CA3AF;-webkit-text-fill-color:#9CA3AF;opacity:1}
-.search-box input:disabled::placeholder{color:#9CA3AF;-webkit-text-fill-color:#9CA3AF;opacity:1}
-.sugg-list{position:absolute;top:48px;left:0;right:0;z-index:200;background:#fff;border-radius:8px;border:1px solid #D1D5DB;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:200px;overflow-y:auto;display:none}
+.search-box input:disabled{color:#8D93A0;-webkit-text-fill-color:#8D93A0;opacity:1}
+.search-box input:disabled::placeholder{color:#8D93A0;-webkit-text-fill-color:#8D93A0;opacity:1}
+.sugg-list{position:absolute;top:48px;left:0;right:0;z-index:200;background:#fff;border-radius:8px;border:1px solid #CED2D4;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:200px;overflow-y:auto;display:none}
 .sugg-list.open{display:block}
-.sugg-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid #F3F4F6}
+.sugg-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid #CED2D4}
 .sugg-item:last-child{border-bottom:none}
 .sugg-item:hover{background:#F9FAFB}
 .sugg-item .main{font-size:14px;font-weight:600;color:#111827}
@@ -105,10 +107,14 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
 .search-box-error svg path{stroke:#C9251C}
 .search-box-error input{color:#C9251C}
 .search-box-error input::placeholder{color:#C9251C}
-.t-input{width:100%;height:44px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #9CA3AF;font-size:16px;font-family:'Open Sans',sans-serif;color:#374151;outline:none;transition:border-color .15s}
-.t-input:focus{border-color:#0039A6}
+.t-input{width:100%;height:44px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #8D93A0;font-size:16px;font-family:'Open Sans',sans-serif;color:#111827;outline:none;transition:border-color .15s}
+.t-input:hover:not(:disabled){border-color:#0039A6}
+.t-input:focus{border-color:#0039A6;border-width:2px}
+.t-input:disabled{background:#F3F4F6;border-color:#CED2D4;color:#8D93A0;cursor:default}
+.t-input[readonly]:not(.t-sokak-field){background:#F3F4F6;border-color:#CED2D4;color:#8D93A0;cursor:default}
 .t-input::placeholder{color:#6B7280}
-.devam-btn{width:100%;height:48px;border-radius:8px;border:none;background:#F3F4F6;color:#9CA3AF;font-size:16px;font-weight:600;font-family:'Open Sans',sans-serif;cursor:not-allowed;transition:.2s}
+select.t-input:invalid{color:#6B7280}
+.devam-btn{width:100%;height:48px;border-radius:8px;border:none;background:#F3F4F6;color:#8D93A0;font-size:16px;font-weight:600;font-family:'Open Sans',sans-serif;cursor:not-allowed;transition:.2s}
 .devam-btn.on{background:#0039A6;color:#fff;cursor:pointer}
 .devam-btn.on:hover{background:#003497}
 .bottom-nav{border-top:1px solid #E5E7EB;padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
@@ -116,7 +122,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
 .chat-btn{width:52px;height:52px;border-radius:50%;border:3px solid #60a5fa;display:flex;align-items:center;justify-content:center;cursor:pointer}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spinner{width:16px;height:16px;border:2px solid #D1D5DB;border-top-color:#0039A6;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:none}
+.spinner{width:16px;height:16px;border:2px solid #CED2D4;border-top-color:#0039A6;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:none}
 </style>
 </head>
 <body>
@@ -129,7 +135,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
       <div><div class="logo-text">Avansas</div><div class="logo-sub">İşyerinin alışveriş yeri</div></div>
     </div>
     <div class="header-icons">
-      <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5.5" stroke="#9CA3AF" stroke-width="1.6"/><path d="M13 13L17 17" stroke="#9CA3AF" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5.5" stroke="#8D93A0" stroke-width="1.6"/><path d="M13 13L17 17" stroke="#8D93A0" stroke-width="1.6" stroke-linecap="round"/></svg></button>
       <div class="cart-wrap">
         <button class="icon-btn cart-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 4h14l-1.5 9H4.5L3 4Z" stroke="#FF6F00" stroke-width="1.5"/><circle cx="7.5" cy="16.5" r="1" fill="#FF6F00"/><circle cx="13.5" cy="16.5" r="1" fill="#FF6F00"/></svg></button>
         <div class="cart-badge">12</div>
@@ -176,7 +182,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
         <div class="field-label" id="lbl-ilce">İlçe <span>*</span></div>
         <div class="sel-trigger disabled" id="trigger-ilce">
           <span class="val ph" id="val-ilce">Seç</span>
-          <svg class="chevron" width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg class="chevron" width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#8D93A0" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
         <span class="field-error" id="err-ilce">*Zorunlu alan</span>
       </div>
@@ -185,7 +191,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
         <div class="field-label" id="lbl-mah">Mahalle <span>*</span></div>
         <div class="sel-trigger disabled" id="trigger-mah">
           <span class="val ph" id="val-mah">Seç</span>
-          <svg class="chevron" width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg class="chevron" width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 1L8 8L15 1" stroke="#8D93A0" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
         <span class="field-error" id="err-mah">*Zorunlu alan</span>
       </div>
@@ -194,7 +200,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
         <div class="field-label" id="lbl-sokak">Sokak/Bina/Firma <span>*</span></div>
         <div class="search-wrap">
           <div class="search-box" id="search-box">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#9CA3AF" stroke-width="1.8" id="sic1"/><path d="M13.5 13.5L17 17" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" id="sic2"/></svg>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#8D93A0" stroke-width="1.8" id="sic1"/><path d="M13.5 13.5L17 17" stroke="#8D93A0" stroke-width="1.8" stroke-linecap="round" id="sic2"/></svg>
             <input id="sokak-input" placeholder="Ara" disabled autocomplete="off"/>
             <div class="spinner" id="spinner"></div>
           </div>
@@ -234,7 +240,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
       <div style="padding:12px 16px 0">
         <div class="picker-breadcrumb">
           <button class="bc-prev" id="bc-il-btn"></button>
-          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#8D93A0" stroke-width="1.5" stroke-linecap="round"/></svg></span>
           <span class="bc-cur">İlçe</span>
         </div>
       </div>
@@ -287,7 +293,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
         </div>
 
       </div>
-      <div style="padding:12px 16px 24px;border-top:1px solid #D1D5DB;flex-shrink:0">
+      <div style="padding:12px 16px 24px;border-top:1px solid #CED2D4;flex-shrink:0">
         <button class="devam-btn on" id="kaydet-btn" onclick="kaydetAdres()">Adresi Kaydet</button>
       </div>
     </div>
@@ -304,7 +310,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
         <!-- İl (readonly) -->
         <div class="field">
           <div class="field-label">İl <span>*</span></div>
-          <div style="height:44px;padding:10px 12px;background:#F3F4F6;border-radius:8px;border:1px solid #D1D5DB;display:flex;align-items:center;justify-content:space-between">
+          <div style="height:44px;padding:10px 12px;background:#F3F4F6;border-radius:8px;border:1px solid #CED2D4;display:flex;align-items:center;justify-content:space-between">
             <span id="t-il-val" style="font-size:16px;color:#374151"></span>
             <svg width="14" height="16" viewBox="0 0 14 16" fill="none"><rect x="1" y="7" width="12" height="8" rx="2" stroke="#374151" stroke-width="1.5"/><path d="M4 7V5a3 3 0 0 1 6 0v2" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
@@ -331,15 +337,8 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
         <!-- Sokak -->
         <div class="field">
           <div class="field-label" id="tlbl-sokak">Sokak <span>*</span></div>
-          <input id="t-sokak" class="t-input" placeholder="Sokak" autocomplete="off" oninput="checkTeslimat()" onclick="document.getElementById('picker-teslimat').dataset.from='teslimat';closePicker('teslimat');openPicker('sokak')" readonly style="cursor:pointer"/>
+          <input id="t-sokak" class="t-input t-sokak-field" placeholder="Sokak" autocomplete="off" oninput="checkTeslimat()" onclick="document.getElementById('picker-teslimat').dataset.from='teslimat';closePicker('teslimat');openPicker('sokak')" readonly style="cursor:pointer"/>
           <span class="field-error" id="terr-sokak">*Zorunlu alan</span>
-        </div>
-
-        <!-- Adres Tarifi -->
-        <div class="field">
-          <div class="field-label" id="tlbl-tarif">Adres Tarifi <span>*</span></div>
-          <textarea id="t-tarif" class="t-input" placeholder="Adresin kolay bulunması için kısa tarif yazın" autocomplete="off" oninput="growTarif(this)" rows="1" maxlength="100" style="resize:none;overflow:hidden;line-height:24px;padding-top:10px;padding-bottom:10px;height:44px;max-height:116px"></textarea>
-          <span class="field-error" id="terr-tarif">*Zorunlu alan</span>
         </div>
 
         <!-- Bina No + Daire No -->
@@ -350,8 +349,8 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
           <span class="field-error" id="terr-bina">*Zorunlu alan</span>
           </div>
           <div class="field" style="flex:1">
-            <div class="field-label" id="tlbl-daire">Daire No <span>*</span></div>
-            <input id="t-daire" class="t-input" placeholder="Daire No" autocomplete="off" oninput="checkTeslimat()"/>
+            <div class="field-label" id="tlbl-daire">Kat <span>*</span></div>
+            <input id="t-daire" class="t-input" placeholder="Kat" autocomplete="off" oninput="checkTeslimat()"/>
           <span class="field-error" id="terr-daire">*Zorunlu alan</span>
           </div>
         </div>
@@ -359,14 +358,14 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
         <!-- Kat + Asansör -->
         <div style="display:flex;gap:12px">
           <div class="field" style="flex:1">
-            <div class="field-label" id="tlbl-kat">Kat <span>*</span></div>
-            <input id="t-kat" class="t-input" placeholder="Kat" autocomplete="off" oninput="checkTeslimat()"/>
+            <div class="field-label" id="tlbl-kat">Daire No <span>*</span></div>
+            <input id="t-kat" class="t-input" placeholder="Daire No" autocomplete="off" oninput="checkTeslimat()"/>
           <span class="field-error" id="terr-kat">*Zorunlu alan</span>
           </div>
           <div class="field" style="flex:1">
             <div class="field-label" id="tlbl-asansor">Asansör var mı? <span>*</span></div>
-            <select id="t-asansor" class="t-input" onchange="checkTeslimat()" style="appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2210%22 viewBox=%220 0 16 10%22><path d=%22M1 1L8 8L15 1%22 stroke=%22%23374151%22 stroke-width=%222%22 stroke-linecap=%22round%22/></svg>');background-repeat:no-repeat;background-position:right 12px center;padding-right:36px">
-              <option value="" disabled selected style="color:#6B7280">Seç</option>
+            <select id="t-asansor" class="t-input" onchange="checkTeslimat()" required style="appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2210%22 viewBox=%220 0 16 10%22><path d=%22M1 1L8 8L15 1%22 stroke=%22%23374151%22 stroke-width=%222%22 stroke-linecap=%22round%22/></svg>');background-repeat:no-repeat;background-position:right 12px center;padding-right:36px">
+              <option value="" disabled selected>Seç</option>
               <option value="Var">Var</option>
               <option value="Yok">Yok</option>
             </select>
@@ -374,10 +373,17 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
           </div>
         </div>
 
+        <!-- Adres Tarifi -->
+        <div class="field">
+          <div class="field-label" id="tlbl-tarif">Adres Tarifi <span>*</span></div>
+          <textarea id="t-tarif" class="t-input" placeholder="Adresin kolay bulunması için kısa tarif yazın" autocomplete="off" oninput="growTarif(this)" rows="1" maxlength="100" style="resize:none;overflow:hidden;line-height:24px;padding-top:10px;padding-bottom:10px;height:44px;max-height:116px"></textarea>
+          <span class="field-error" id="terr-tarif">*Zorunlu alan</span>
+        </div>
+
         <!-- Adres Başlığı -->
         <div class="field">
           <div class="field-label" id="tlbl-baslik">Adres Başlığı <span>*</span></div>
-          <input id="t-baslik" class="t-input" placeholder="Adrese bir isim verin" autocomplete="off" oninput="checkTeslimat()"/>
+          <input id="t-baslik" class="t-input" placeholder="Adrese bir isim verin" maxlength="40" autocomplete="off" oninput="checkTeslimat()"/>
           <span class="field-error" id="terr-baslik">*Zorunlu alan</span>
         </div>
 
@@ -387,11 +393,11 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
         <!-- Checkbox -->
         <div style="display:flex;align-items:flex-start;gap:8px">
           <input type="checkbox" id="t-fatura" checked style="width:16px;height:16px;margin-top:2px;accent-color:#111827;flex-shrink:0;border-radius:4px"/>
-          <label for="t-fatura" style="font-size:12px;color:#1F1A18;line-height:18px;cursor:pointer">Teslimat adresim, fatura adresim olarak kullanılabilir.</label>
+          <label for="t-fatura" style="font-size:14px;color:#111827;line-height:20px;cursor:pointer">Teslimat adresim, fatura adresim olarak kullanılabilir.</label>
         </div>
 
       </div>
-      <div style="padding:12px 16px 24px;border-top:1px solid #D1D5DB;flex-shrink:0">
+      <div style="padding:12px 16px 24px;border-top:1px solid #CED2D4;flex-shrink:0">
         <button class="devam-btn on" id="t-devam-btn" onclick="teslimatDevam()">Devam</button>
       </div>
     </div>
@@ -406,9 +412,9 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
       <div style="padding:12px 16px 0">
         <div class="picker-breadcrumb">
           <button class="bc-prev" id="bc-sokak-il-btn"></button>
-          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#8D93A0" stroke-width="1.5" stroke-linecap="round"/></svg></span>
           <button class="bc-prev" id="bc-sokak-ilce-btn"></button>
-          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#8D93A0" stroke-width="1.5" stroke-linecap="round"/></svg></span>
           <span class="bc-cur" id="bc-sokak-mah-label"></span>
         </div>
       </div>
@@ -435,7 +441,7 @@ body{font-family:'Open Sans',sans-serif;background:#f0f2f5;display:flex;justify-
       <div style="padding:12px 16px 0">
         <div class="picker-breadcrumb">
           <button class="bc-prev" id="bc-ilce-btn"></button>
-          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <span class="bc-sep"><svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L7 6L1 11" stroke="#8D93A0" stroke-width="1.5" stroke-linecap="round"/></svg></span>
           <span class="bc-cur">Mahalle</span>
         </div>
       </div>
@@ -526,37 +532,15 @@ function closePicker(key) {
 // ── Picker liste render ────────────────────────────────
 function renderPickerList(key, items, selected, filter='') {
   const list = document.getElementById('picker-' + key + '-list');
-  const filtered = filter ? items.filter(v => v.toLowerCase().includes(filter.toLowerCase())) : items;
-  let html = '';
-
-  if (key === 'il' && !filter) {
-    // En çok seçilenler bölümü
-    html += '<div class="picker-group-label">En Çok Seçilenler</div>';
-    POPULAR.forEach(v => {
-      html += `<div class="picker-row${v===selected?' active':''}" data-value="${v}">${v}</div>`;
-    });
-    // Alfabetik gruplar
-    let lastLetter = '';
-    filtered.forEach(v => {
-      const letter = v[0].toUpperCase();
-      if (letter !== lastLetter) {
-        html += `<div class="picker-group-label">${letter}</div>`;
-        lastLetter = letter;
-      }
-      html += `<div class="picker-row${v===selected?' active':''}" data-value="${v}">${v}</div>`;
-    });
-  } else {
-    let lastLetter = '';
-    filtered.forEach(v => {
-      const letter = v[0].toUpperCase();
-      if (letter !== lastLetter) {
-        html += `<div class="picker-group-label">${letter}</div>`;
-        lastLetter = letter;
-      }
-      html += `<div class="picker-row${v===selected?' active':''}" data-value="${v}">${v}</div>`;
-    });
+  let allItems = items;
+  if (key === 'il') {
+    allItems = [...new Set([...POPULAR, ...items])].sort((a,b)=>a.localeCompare(b,'tr'));
   }
-
+  const filtered = filter ? allItems.filter(v => v.toLowerCase().includes(filter.toLowerCase())) : allItems;
+  let html = '';
+  filtered.forEach(v => {
+    html += `<div class="picker-row${v===selected?' active':''}" data-value="${v}">${v}</div>`;
+  });
   list.innerHTML = html;
 }
 
@@ -641,15 +625,15 @@ document.getElementById('picker-sokak-search').addEventListener('input', functio
       };
 
       // Önce mahalle+ilçe+il ile dene
-      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+mahTemiz+', '+st.ilce+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr`;
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+mahTemiz+', '+st.ilce+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr&addressdetails=1&namedetails=1`;
       const r = await fetch(url);
       let data = await r.json();
       if (!data.length) {
-        const url2 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+st.ilce+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr`;
+        const url2 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+st.ilce+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr&addressdetails=1&namedetails=1`;
         const r2 = await fetch(url2);
         data = await r2.json();
         if (!data.length) {
-          const url3 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr`;
+          const url3 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+st.il)}&format=json&limit=6&countrycodes=tr&accept-language=tr&addressdetails=1&namedetails=1`;
           const r3 = await fetch(url3);
           data = await r3.json();
         }
@@ -665,13 +649,25 @@ document.getElementById('picker-sokak-search').addEventListener('input', functio
   }, 1500);
 });
 
+function buildAutofill(item) {
+  if (item._autofill) return item._autofill;
+  const addr = item.address || {};
+  const sokak = addr.road || addr.pedestrian || addr.footway || addr.cycleway || '';
+  const bina  = addr.house_number || '';
+  const poiName = (item.namedetails && item.namedetails.name) ? item.namedetails.name : (item.name || '');
+  return { sokak, bina, daire: '', kat: '', tarif: poiName };
+}
+
 function renderSokakResults(list, data) {
   list.innerHTML = data.map(item => {
+    const poiName = (item.namedetails && item.namedetails.name) ? item.namedetails.name : (item.name || null);
     const main = item._main || item.display_name.split(', ').slice(0,2).join(', ');
     const sub  = item._sub  || item.display_name.split(', ').slice(2,5).join(', ');
-    const af = item._autofill ? ` data-autofill='${JSON.stringify(item._autofill)}'` : '';
+    const afObj = buildAutofill(item);
+    const af = ` data-autofill='${JSON.stringify(afObj)}'`;
     const dl = item._label ? ` data-label="${item._label}"` : '';
-    return `<div class="picker-row" style="flex-direction:column;align-items:flex-start;height:auto;min-height:56px;padding:10px 16px;gap:2px" data-name="${main}" data-lat="${item.lat}" data-lon="${item.lon}"${af}${dl}>
+    const poiAttr = poiName ? ` data-poi="${poiName.replace(/"/g,'&quot;')}"` : '';
+    return `<div class="picker-row" style="flex-direction:column;align-items:flex-start;height:auto;min-height:56px;padding:10px 16px;gap:2px" data-name="${main}" data-lat="${item.lat}" data-lon="${item.lon}"${af}${dl}${poiAttr}>
       <span style="font-weight:600;font-size:15px">${main}</span>
       <span style="font-size:12px;color:#6B7280">${sub}</span>
     </div>`;
@@ -697,10 +693,13 @@ document.getElementById('picker-sokak-list').addEventListener('click', function(
   document.getElementById('t-sokak').value = sokakLabel;
   if (autofill) {
     if (autofill.bina)  document.getElementById('t-bina').value  = autofill.bina;
-    if (autofill.daire) document.getElementById('t-daire').value = autofill.daire;
-    if (autofill.kat)   document.getElementById('t-kat').value   = autofill.kat;
+    if (autofill.daire) document.getElementById('t-kat').value   = autofill.daire;
+    if (autofill.kat)   document.getElementById('t-daire').value = autofill.kat;
     if (autofill.tarif) { document.getElementById('t-tarif').value = autofill.tarif; growTarif(document.getElementById('t-tarif')); }
   }
+  const poiName = row.dataset.poi;
+  st._poi = poiName || '';
+  if (poiName) { document.getElementById('t-tarif').value = poiName; growTarif(document.getElementById('t-tarif')); }
   checkTeslimat();
   if (fromTeslimat) {
     openPicker('teslimat');
@@ -767,8 +766,8 @@ function disableSokak() {
   inp.disabled = true; inp.value = ''; st.sokak = '';
   document.getElementById('search-box').classList.remove('on');
   document.getElementById('sugg-list').classList.remove('open');
-  document.getElementById('sic1').setAttribute('stroke','#9CA3AF');
-  document.getElementById('sic2').setAttribute('stroke','#9CA3AF');
+  document.getElementById('sic1').setAttribute('stroke','#8D93A0');
+  document.getElementById('sic2').setAttribute('stroke','#8D93A0');
 
 }
 
@@ -814,7 +813,7 @@ document.getElementById('sokak-input').addEventListener('input', function() {
 
 async function searchAddr(q) {
   try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+st.mah+', '+st.ilce+', '+st.il+', Türkiye')}&format=json&limit=5&countrycodes=tr&accept-language=tr`;
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', '+st.mah+', '+st.ilce+', '+st.il+', Türkiye')}&format=json&limit=5&countrycodes=tr&accept-language=tr&addressdetails=1&namedetails=1`;
     const r = await fetch(url, { headers: {'Accept-Language':'tr'} });
     const data = await r.json();
     document.getElementById('spinner').style.display = 'none';
@@ -869,7 +868,7 @@ function scheduleGeocode(q) {
 async function geocodeMap(q) {
   if (!leafMap) initMap(39.0, 35.0, 6);
   try {
-    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=tr`);
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=tr&addressdetails=1&namedetails=1`);
     const d = await r.json();
     if (d[0]) {
       leafMap.setView([+d[0].lat, +d[0].lon], 14);
@@ -972,8 +971,9 @@ function openTeslimat() {
   document.getElementById('t-bina').value  = af ? af.bina  : (parsed.bina  || '');
   document.getElementById('t-daire').value = af ? af.daire : (parsed.daire || '');
   document.getElementById('t-kat').value   = af ? af.kat   : (parsed.kat   || '');
-  document.getElementById('t-tarif').value = af ? af.tarif : '';
-  if (af && af.tarif) growTarif(document.getElementById('t-tarif'));
+  const poiVal = st._poi || '';
+  document.getElementById('t-tarif').value = af ? (af.tarif || poiVal) : poiVal;
+  growTarif(document.getElementById('t-tarif'));
   document.getElementById('t-baslik').value = '';
   document.getElementById('t-asansor').value = '';
   // buton her zaman aktif
